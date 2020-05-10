@@ -1,0 +1,289 @@
+syntax = "proto3";
+
+//生成文件所在包名
+option java_package = "cn.aberic.lilydb.connector.grpc";
+//生成的java文件名
+option java_outer_classname = "RSProto";
+
+package api;
+
+import "connector/grpc/data.proto";
+import "connector/grpc/config.proto";
+
+// ReqConf 请求获取数据库引擎对象
+message ReqConf {
+}
+
+// RespConf 响应获取数据库引擎对象
+message RespConf {
+    // Code 响应结果码
+    Code Code = 1;
+    // Conf 数据库引擎对象
+    Config Conf = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqDatabases 请求获取数据库集合
+message ReqDatabases {
+}
+
+// RespDatabases 响应获取数据库集合
+message RespDatabases {
+    // Code 响应结果码
+    Code Code = 1;
+    // Databases 数据库对象集合
+    repeated Database Databases = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqForms 请求获取数据库表集合
+message ReqForms {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+}
+
+// RespForms 响应获取数据库表集合
+message RespForms {
+    // Code 响应结果码
+    Code Code = 1;
+    // Forms 数据库表对象集合
+    repeated Form Forms = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqCreateDatabase 请求新建数据库
+message ReqCreateDatabase {
+    // Name 数据库名称，根据需求可以随时变化
+    string Name = 1;
+    // Comment 数据库描述
+    string Comment = 2;
+}
+
+// RespDatabase 响应新建数据库
+message RespDatabase {
+    // Code 响应结果码
+    Code Code = 1;
+    // database 数据库对象
+    Database Database = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqCreateForm 请求创建表
+message ReqCreateForm {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+    // Name 表名称
+    string Name = 2;
+    // Comment 表描述
+    string Comment = 3;
+    // FormType 表类型
+    FormType FormType = 4;
+}
+
+// ReqKey 请求新建主键
+message ReqCreateKey {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+    // FormName 表名称
+    string FormName = 2;
+    // Comment 主键结构名，按照规范结构组成的主键字段名称，由对象结构层级字段通过'.'组成，如'i','in.s'
+    string KeyStructure = 3;
+}
+
+// ReqIndex 请求新建索引
+message ReqCreateIndex {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+    // FormName 表名称
+    string FormName = 2;
+    // Comment 主键结构名，按照规范结构组成的主键字段名称，由对象结构层级字段通过'.'组成，如'i','in.s'
+    string KeyStructure = 3;
+}
+
+// ReqPutD 新增数据
+message ReqPutD {
+    // Key 数据库名称
+    string Key = 1;
+    // Value 插入数据对象
+    bytes Value = 2;
+}
+
+// RespPutD 响应新增数据
+message RespPutD {
+    // Code 响应结果码
+    Code Code = 1;
+    // HashKey HashKey
+    uint64 HashKey = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqSetD 新增数据
+message ReqSetD {
+    // Key 数据库名称
+    string Key = 1;
+    // Value 插入数据对象
+    bytes Value = 2;
+}
+
+// RespSetD 响应新增数据
+message RespSetD {
+    // Code 响应结果码
+    Code Code = 1;
+    // HashKey HashKey
+    uint64 HashKey = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqGetD 获取数据
+message ReqGetD {
+    // Key 数据库名称
+    string Key = 1;
+}
+
+// RespGetD 响应获取数据
+message RespGetD {
+    // Code 响应结果码
+    Code Code = 1;
+    // Value Value
+    bytes Value = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqPut 新增数据
+message ReqPut {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+    // FormName 表名称
+    string FormName = 2;
+    // Key 数据库名称
+    string Key = 3;
+    // Value 插入数据对象
+    bytes Value = 4;
+}
+
+// RespPut 响应新增数据
+message RespPut {
+    // Code 响应结果码
+    Code Code = 1;
+    // HashKey HashKey
+    uint64 HashKey = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqSet 新增数据
+message ReqSet {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+    // FormName 表名称
+    string FormName = 2;
+    // Key 数据库名称
+    string Key = 3;
+    // Value 插入数据对象
+    bytes Value = 4;
+}
+
+// RespSet 响应新增数据
+message RespSet {
+    // Code 响应结果码
+    Code Code = 1;
+    // HashKey HashKey
+    uint64 HashKey = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqGet 获取数据
+message ReqGet {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+    // FormName 表名称
+    string FormName = 2;
+    // Key 数据库名称
+    string Key = 3;
+}
+
+// RespGet 响应获取数据
+message RespGet {
+    // Code 响应结果码
+    Code Code = 1;
+    // Value Value
+    bytes Value = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqSelect 获取数据
+message ReqSelect {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+    // FormName 表名称
+    string FormName = 2;
+    // selector 条件选择器
+    Selector Selector = 3;
+}
+
+// RespSelect 响应获取数据
+message RespSelect {
+    // Code 响应结果码
+    Code Code = 1;
+    // Count 获取数据总条数
+    int32 Count = 2;
+    // Value 获取数据结果
+    bytes Value = 3;
+    // ErrMsg 错误信息
+    string ErrMsg = 4;
+}
+
+// ReqGet 删除数据
+message ReqRemove {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+    // FormName 表名称
+    string FormName = 2;
+    // Key 数据库名称
+    string Key = 3;
+}
+
+// ReqDelete 删除数据
+message ReqDelete {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+    // FormName 表名称
+    string FormName = 2;
+    // selector 条件选择器
+    Selector Selector = 3;
+}
+
+// RespDelete 响应删除数据
+message RespDelete {
+    // Code 响应结果码
+    Code Code = 1;
+    // Count 获取数据总条数
+    int32 Count = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// Resp 通用响应对象
+message Resp {
+    // Code 响应结果码
+    Code Code = 1;
+    // ErrMsg 错误信息
+    string ErrMsg = 2;
+}
+
+// Code 响应结果码
+enum Code {
+    // Success 成功
+    Success = 0;
+    // Fail 失败
+    Fail = 1;
+}
