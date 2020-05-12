@@ -26,7 +26,6 @@ package index
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/aberic/gnomon/log"
 	"github.com/aberic/lilydb/connector"
 	"github.com/aberic/lilydb/engine/siam/storage"
@@ -63,10 +62,10 @@ func NewSelector(selectorBytes []byte, indexes []*Index, databaseID, formID stri
 // 查询顺序 scope -> match -> conditions -> skip -> sort -> limit
 type Selector struct {
 	indexes    []*Index     // indexes 指定表下索引集合
-	Conditions []*condition `json:"conditions"` // Conditions 条件查询
-	Skip       uint32       `json:"skip"`       // Skip 结果集跳过数量
-	Sort       *sort        `json:"sort"`       // Sort 排序方式
-	Limit      uint32       `json:"limit"`      // Limit 结果集顺序数量
+	Conditions []*condition `json:"Conditions"` // Conditions 条件查询
+	Skip       uint32       `json:"Skip"`       // Skip 结果集跳过数量
+	Sort       *sort        `json:"Sort"`       // Sort 排序方式
+	Limit      uint32       `json:"Limit"`      // Limit 结果集顺序数量
 	databaseID string       // 数据库唯一ID
 	formID     string       // 表唯一ID
 	delete     bool         // 是否删除检索结果
@@ -79,7 +78,7 @@ type Selector struct {
 // return values 检索结果集合
 //
 // return err 检索错误信息，如果有
-func (s *Selector) Run() (int32, []interface{}, error) {
+func (s *Selector) Run() (int32, []interface{}) {
 	var (
 		idx       *Index
 		leftQuery bool
@@ -87,11 +86,8 @@ func (s *Selector) Run() (int32, []interface{}, error) {
 		pcs       map[string]*paramCondition
 		count     int32
 		is        []interface{}
-		err       error
 	)
-	if idx, leftQuery, nc, pcs, err = s.index(); nil != err {
-		return 0, nil, err
-	}
+	idx, leftQuery, nc, pcs = s.index()
 	log.Debug("query", log.Field("index", idx.KeyStructure()))
 	if s.Limit == 0 {
 		s.Limit = 1000
@@ -101,7 +97,7 @@ func (s *Selector) Run() (int32, []interface{}, error) {
 	} else {
 		count, is = s.rightQueryIndex(idx, nc, pcs)
 	}
-	return count, is, nil
+	return count, is
 }
 
 // getIndex 根据检索条件获取使用索引对象
@@ -111,9 +107,9 @@ func (s *Selector) Run() (int32, []interface{}, error) {
 // leftQuery 是否顺序查询
 //
 // cond 条件对象
-func (s *Selector) index() (index *Index, leftQuery bool, nc *nodeCondition, pcs map[string]*paramCondition, err error) {
+func (s *Selector) index() (index *Index, leftQuery bool, nc *nodeCondition, pcs map[string]*paramCondition) {
 	// 优先尝试采用条件作为索引，缩小索引范围以提高检索效率
-	index, leftQuery, nc, pcs, err = s.indexCondition()
+	index, leftQuery, nc, pcs = s.indexCondition()
 	if index != nil { // 如果存在条件查询，则优先条件查询
 		return
 	}
@@ -123,18 +119,14 @@ func (s *Selector) index() (index *Index, leftQuery bool, nc *nodeCondition, pcs
 		}
 	}
 	// 取值默认索引来进行查询操作
-	for _, index = range s.indexes {
-		log.Debug("getIndex", log.Field("index", index))
-		return
-	}
-	err = errors.New("index not found")
+	index = s.indexes[0]
 	return
 }
 
 // getIndexCondition 优先尝试采用条件作为索引，缩小索引范围以提高检索效率
 //
 // 优先匹配有多个相同Param参数的条件，如果相同数量一样，则按照先后顺序选择最先匹配的
-func (s *Selector) indexCondition() (index *Index, leftQuery bool, nc *nodeCondition, pcs map[string]*paramCondition, err error) {
+func (s *Selector) indexCondition() (index *Index, leftQuery bool, nc *nodeCondition, pcs map[string]*paramCondition) {
 	pcs = make(map[string]*paramCondition)
 	ncs := make(map[string]*nodeCondition)
 	leftQuery = true
@@ -362,8 +354,8 @@ func (s *Selector) leftQueryLeaf(skip, limit uint32, leaf *node, ns *nodeConditi
 					continue
 				}
 			}
-			read, err := storage.Obtain().Take(utils.PathFormFile(s.databaseID, s.formID), link.seekStart, link.seekLast)
-			if nil == err && s.isConditionNoIndexLeaf(ns, pcs, read.Value) {
+			value, err := storage.Obtain().Take(utils.PathFormFile(s.databaseID, s.formID), link.seekStart, link.seekLast)
+			if nil == err && s.isConditionNoIndexLeaf(ns, pcs, value) {
 				count++
 				if skip > 0 {
 					skip--
@@ -373,7 +365,7 @@ func (s *Selector) leftQueryLeaf(skip, limit uint32, leaf *node, ns *nodeConditi
 				if s.delete {
 					leaf.links = append(leaf.links[:position], leaf.links[position+1:]...)
 				}
-				is = append(is, read.Value)
+				is = append(is, value)
 			}
 		}
 	}
@@ -466,8 +458,8 @@ func (s *Selector) rightQueryLeaf(skip, limit uint32, leaf *node, ns *nodeCondit
 				}
 			}
 			link := leaf.links[i]
-			read, err := storage.Obtain().Take(utils.PathFormFile(s.databaseID, s.formID), link.seekStart, link.seekLast)
-			if nil == err && s.isConditionNoIndexLeaf(ns, pcs, read.Value) {
+			value, err := storage.Obtain().Take(utils.PathFormFile(s.databaseID, s.formID), link.seekStart, link.seekLast)
+			if nil == err && s.isConditionNoIndexLeaf(ns, pcs, value) {
 				count++
 				if skip > 0 {
 					skip--
@@ -477,7 +469,7 @@ func (s *Selector) rightQueryLeaf(skip, limit uint32, leaf *node, ns *nodeCondit
 				if s.delete {
 					leaf.links = append(leaf.links[:i], leaf.links[i+1:]...)
 				}
-				is = append(is, read.Value)
+				is = append(is, value)
 			}
 		}
 	}

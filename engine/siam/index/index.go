@@ -43,9 +43,12 @@ import (
 //
 // primary 是否主键
 func NewIndex(id, keyStructure string, primary bool) *Index {
-	index := &Index{id: id, primary: primary, keyStructure: keyStructure}
-	index.node = &node{level: 1, degreeIndex: 0, preNode: nil, nodes: []*node{}}
-	return index
+	return &Index{
+		id:           id,
+		primary:      primary,
+		keyStructure: keyStructure,
+		node:         &node{level: 1, degreeIndex: 0, preNode: nil, nodes: []*node{}},
+	}
 }
 
 // Index Siam索引
@@ -96,11 +99,7 @@ func (i *Index) Get(md516Key string, hashKey uint64) connector.Link {
 }
 
 // Recover 重置索引数据
-func (i *Index) Recover(databaseID, formID string) {
-	i.recoverMultiReadFile(databaseID, formID)
-}
-
-func (i *Index) recoverMultiReadFile(databaseID, formID string) {
+func (i *Index) Recover(databaseID, formID string) error {
 	indexFilePath := utils.PathFormIndexFile(databaseID, formID, i.id)
 	if gnomon.FilePathExists(indexFilePath) { // 索引文件存在才继续恢复
 		var (
@@ -109,16 +108,20 @@ func (i *Index) recoverMultiReadFile(databaseID, formID string) {
 		)
 		defer func() { _ = file.Close() }()
 		if file, err = os.OpenFile(indexFilePath, os.O_RDONLY, 0644); nil != err {
-			log.Panic("index recover multi read failed", log.Err(err))
+			log.Error("index recover multi read failed", log.Err(err))
+			return err
 		}
 		_, err = file.Seek(0, io.SeekStart) // 文件下标置为文件的起始位置
 		if err != nil {
-			log.Panic("index recover multi read failed", log.Err(err))
+			log.Error("index recover multi read failed", log.Err(err))
+			return err
 		}
 		if err = i.read(file, 0); nil != err && io.EOF != err {
-			log.Panic("index recover multi read failed", log.Err(err))
+			log.Error("index recover multi read failed", log.Err(err))
+			return err
 		}
 	}
+	return nil
 }
 
 func (i *Index) read(file *os.File, offset int64) (err error) {
@@ -140,7 +143,7 @@ func (i *Index) read(file *os.File, offset int64) (err error) {
 		if len(data) == 0 {
 			return
 		}
-		if len(data)%42 != 0 {
+		if len(data)%42 != 0 { // 单条索引默认占用长度42个字符
 			return errors.New("index lens does't match")
 		}
 	}
@@ -159,14 +162,14 @@ func (i *Index) read(file *os.File, offset int64) (err error) {
 			md516Key := indexStr[p1:p2]
 			seekStart := gnomon.ScaleDDuoStringToInt64(indexStr[p2:p3])     // value最终存储在文件中的起始位置
 			seekLast := int(gnomon.ScaleDDuoStringToInt64(indexStr[p3:p4])) // value最终存储在文件中的持续长度
-			i.node.put(md516Key, hashKey, hashKey)
-			link := i.node.get(md516Key, hashKey, hashKey)
+			//log.Debug("read", log.Field("i", i), log.Field("node", i.node))
+			link, _ := i.node.put(md516Key, hashKey, hashKey)
 			link.Fit(p0, seekStart, seekLast)
 			// todo ID自增
 			//atomic.AddUint64(i.form.getAutoID(), 1) // ID自增
 		}(i, position)
-		position += 36
-		if indexStrLen < position+36 {
+		position += 42 // 单条索引默认占用长度42个字符
+		if indexStrLen < position+42 {
 			haveNext = false
 		}
 	}

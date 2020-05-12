@@ -26,7 +26,6 @@ package storage
 
 import (
 	"bufio"
-	"errors"
 	"github.com/aberic/gnomon"
 	"github.com/aberic/gnomon/log"
 	"github.com/aberic/lilydb/config"
@@ -41,11 +40,6 @@ import (
 var (
 	stg         *Storage
 	onceStorage sync.Once
-
-	// ErrValueType value type error
-	ErrValueType = errors.New("value type error")
-	// ErrValueInvalid value is invalid
-	ErrValueInvalid = errors.New("value is invalid")
 )
 
 // Obtain 取得Storage对象
@@ -75,7 +69,7 @@ type Storage struct {
 // seekLast value最终存储在文件中的持续长度
 //
 // return Read 返回数据读取结果
-func (s *Storage) Take(filePath string, seekStart int64, seekLast int) (*Read, error) {
+func (s *Storage) Take(filePath string, seekStart int64, seekLast int) (interface{}, error) {
 	var (
 		file *os.File
 		err  error
@@ -107,16 +101,7 @@ func (s *Storage) Take(filePath string, seekStart int64, seekLast int) (*Read, e
 		//log.Error("read", log.Err(err))
 		return nil, err
 	}
-	switch value.(type) {
-	default:
-		return nil, ErrValueType
-	case map[string]interface{}:
-		valueMap := value.(map[string]interface{})
-		if valueMap["I"].(bool) {
-			return &Read{Key: valueMap["K"].(string), Value: valueMap["V"]}, nil
-		}
-		return nil, ErrValueInvalid
-	}
+	return value, nil
 }
 
 // Store 存储具体内容
@@ -158,11 +143,11 @@ func (s *Storage) Store(databaseID, formID string, value interface{}, writes []*
 		fm.file = file
 	}
 	// value最终存储在文件中的起始位置
-	if seekStart, err = file.Seek(0, io.SeekEnd); err != nil {
+	if seekStart, err = fm.file.Seek(0, io.SeekEnd); err != nil {
 		//log.Debug("storeData", log.Err(err))
 		return err
 	}
-	if seekLast, err = file.Write(data); nil != err { // value最终存储在文件中的持续长度
+	if seekLast, err = fm.file.Write(data); nil != err { // value最终存储在文件中的持续长度
 		//log.Debug("storeData", log.Err(err))
 		return err
 	}
@@ -216,6 +201,7 @@ func (s *Storage) storeIndex(databaseID, formID, formFilePath string, seekStart 
 	}
 	// 写入11位key及16位md5后key
 	appendStr := strings.Join([]string{gnomon.StringPrefixSupplementZero(gnomon.ScaleUint64ToDDuoString(write.HashKey), 11), write.MD516Key}, "")
+	//log.Debug("storeIndex", log.Field("md516Key", write.MD516Key), log.Field("appendStr", appendStr))
 	//log.Debug("storeIndex",
 	//	log.Field("appendStr", appendStr),
 	//	log.Field("formIndexFilePath", write.FormIndexFilePath),
@@ -223,22 +209,24 @@ func (s *Storage) storeIndex(databaseID, formID, formFilePath string, seekStart 
 	var seekEnd int64
 	//log.Debug("running", log.Field("type", "moldIndex"), log.Field("seekStartIndex", write.SeekStartIndex))
 	if write.SeekStartIndex <= 0 {
-		if seekEnd, err = file.Seek(0, io.SeekEnd); nil != err {
+		if seekEnd, err = idx.file.Seek(0, io.SeekEnd); nil != err {
 			//log.Error("storeIndex", log.Err(err))
 			return err
 		}
 		//log.Debug("running", log.Field("it.link.seekStartIndex == -1", seekEnd))
 	} else {
-		if seekEnd, err = file.Seek(write.SeekStartIndex, io.SeekStart); nil != err { // 寻址到原索引起始位置
+		if seekEnd, err = idx.file.Seek(write.SeekStartIndex, io.SeekStart); nil != err { // 寻址到原索引起始位置
 			//log.Error("storeIndex", log.Err(err))
 			return err
 		}
 		//log.Debug("running", log.Field("seekStartIndex", write.SeekStartIndex), log.Field("it.link.seekStartIndex != -1", seekEnd))
 	}
 	// 写入11位key及16位md5后key及5位起始seek和4位持续seek
-	if _, err = file.WriteString(strings.Join([]string{appendStr,
+	indexStr := gnomon.StringBuild(appendStr,
 		gnomon.StringPrefixSupplementZero(gnomon.ScaleInt64ToDDuoString(seekStart), 11),
-		gnomon.StringPrefixSupplementZero(gnomon.ScaleIntToDDuoString(seekLast), 4)}, "")); nil != err {
+		gnomon.StringPrefixSupplementZero(gnomon.ScaleIntToDDuoString(seekLast), 4))
+	//log.Debug("storeIndex", log.Field("indexStr", indexStr))
+	if _, err = idx.file.WriteString(indexStr); nil != err {
 		//log.Error("running", log.Field("seekStartIndex", seekEnd), log.Err(err))
 		return err
 	}

@@ -38,7 +38,7 @@ import (
 	"sync/atomic"
 )
 
-const indexAutoID = "lily_do_not_repeat_id"
+const indexAutoID = "lily_do_not_repeat_auto_id"
 
 // NewForm 新建表，会创建默认自增主键
 func NewForm(formID, formName, comment string) *Form {
@@ -181,7 +181,8 @@ func (f *Form) Select(databaseID string, selectorBytes []byte) (int32, []interfa
 	if nil != err {
 		return 0, nil, err
 	}
-	return selector.Run()
+	count, values := selector.Run()
+	return count, values, nil
 }
 
 // Delete 根据条件删除
@@ -202,8 +203,8 @@ func (f *Form) Delete(databaseID string, selectorBytes []byte) (int32, error) {
 	if nil != err {
 		return 0, err
 	}
-	c, _, err := selector.Run()
-	return c, err
+	count, _ := selector.Run()
+	return count, nil
 }
 
 // rangeIndexes 遍历表索引ID集合，检索并计算所有索引返回对象集合

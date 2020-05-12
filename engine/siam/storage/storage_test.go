@@ -25,9 +25,36 @@
 package storage
 
 import (
+	"github.com/aberic/gnomon"
 	"github.com/aberic/lilydb/engine/siam/utils"
+	"strconv"
 	"testing"
 )
+
+func TestObtain(t *testing.T) {
+	s := Obtain()
+	type Value struct {
+		Name string
+		Age  int
+	}
+	for i := 0; i < 10; i++ {
+		v := &Value{Name: "name", Age: i}
+		if err := s.Store("databaseID", "formID", v, []*Write{
+			{
+				IndexID:           "indexID",
+				FormIndexFilePath: utils.PathFormIndexFile("databaseID", "formID", "indexID"),
+				MD516Key:          gnomon.HashMD516(strconv.Itoa(i)),
+				HashKey:           1234,
+				SeekStartIndex:    -1,
+				Handler: func(SeekStartIndex int64, SeekStart int64, SeekLast int) {
+					t.Log(SeekStartIndex, SeekStart, SeekLast)
+				},
+			},
+		}); nil != err {
+			t.Error(err)
+		}
+	}
+}
 
 func TestStorage_Store(t *testing.T) {
 	err := Obtain().Store("databaseID", "formID", "value", []*Write{
@@ -72,7 +99,7 @@ func TestStorage_StoreFailIndexFilePath(t *testing.T) {
 }
 
 func TestStorage_Take(t *testing.T) {
-	r, err := Obtain().Take(utils.PathFormFile("databaseID", "formID"), 0, 26)
+	r, err := Obtain().Take(utils.PathFormFile("databaseID", "formID"), 0, 42)
 	t.Log(err, r)
 }
 

@@ -40,9 +40,9 @@ type condition struct {
 	//	}
 	//
 	// key可取'i','in.s'
-	Param string      `json:"param"`
-	Cond  string      `json:"cond"`  // 条件 gt/lt/eq/dif 大于/小于/等于/不等
-	Value interface{} `json:"value"` // 比较对象，支持int、string、float和bool
+	Param string      `json:"Param"`
+	Cond  string      `json:"Cond"`  // 条件 gt/lt/eq/dif 大于/小于/等于/不等
+	Value interface{} `json:"Value"` // 比较对象，支持int、string、float和bool
 }
 
 // sort 排序方式
@@ -59,8 +59,8 @@ type sort struct {
 	//	}
 	//
 	// key可取'i','in.s'
-	Param string `json:"param"`
-	ASC   bool   `json:"asc"` // 是否升序
+	Param string `json:"Param"`
+	ASC   bool   `json:"Asc"` // 是否升序
 }
 
 // nodeCondition 多个相同Param条件检索预匹配的节点单元

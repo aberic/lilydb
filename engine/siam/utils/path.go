@@ -32,20 +32,20 @@ import (
 
 // PathFormIndexFile 表索引文件路径
 //
-// dataID 数据库唯一id
+// databaseID 数据库唯一id
 //
 // formID 表唯一id
 //
 // indexID 表索引唯一id
-func PathFormIndexFile(dataID, formID, indexID string) string {
-	return gnomon.StringBuild(config.Obtain().DataDir, string(filepath.Separator), dataID, string(filepath.Separator), formID, string(filepath.Separator), indexID, ".idx")
+func PathFormIndexFile(databaseID, formID, indexID string) string {
+	return gnomon.StringBuild(config.Obtain().DataDir, string(filepath.Separator), databaseID, string(filepath.Separator), formID, string(filepath.Separator), indexID, ".idx")
 }
 
 // PathFormFile 表文件路径
 //
-// dataID 数据库唯一id
+// databaseID 数据库唯一id
 //
 // formID 表唯一id
-func PathFormFile(dataID, formID string) string {
-	return filepath.Join(config.Obtain().DataDir, dataID, formID, "form.dat")
+func PathFormFile(databaseID, formID string) string {
+	return filepath.Join(config.Obtain().DataDir, databaseID, formID, "form.dat")
 }

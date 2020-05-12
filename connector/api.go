@@ -117,7 +117,7 @@ type Index interface {
 	// hashKey 索引key，可通过hash转换string生成
 	Get(key string, hashKey uint64) Link
 	// Recover 重置索引数据
-	Recover(databaseID, formID string)
+	Recover(databaseID, formID string) error
 }
 
 // Link 叶子节点下的链表对象接口
@@ -143,7 +143,5 @@ type Selector interface {
 	// return count 检索结果总条数
 	//
 	// return values 检索结果集合
-	//
-	// return err 检索错误信息，如果有
-	Run() (count int32, values []interface{}, err error)
+	Run() (count int32, values []interface{})
 }

@@ -138,9 +138,3 @@ type Write struct {
 	SeekStartIndex    int64   // 上一索引最终存储在文件中的起始位置
 	Handler           Handler // 存储回调mu         sync.Mutex
 }
-
-// Read 数据读取结果
-type Read struct {
-	Key   string      // key
-	Value interface{} // value
-}

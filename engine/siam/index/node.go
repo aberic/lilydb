@@ -153,11 +153,11 @@ func (n *node) createLeaf(index uint16) *node {
 }
 
 func (n *node) link(md516Key string) (lk *link, exist bool) {
-	defer n.mu.Unlock()
-	n.mu.Lock()
 	if pos, exist := n.existLink(md516Key); exist {
 		return n.links[pos], true
 	}
+	defer n.mu.Unlock()
+	n.mu.Lock()
 	lk = &link{md516Key: md516Key}
 	n.links = append(n.links, lk)
 	return lk, false
