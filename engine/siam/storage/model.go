@@ -29,14 +29,6 @@ import (
 	"sync"
 )
 
-// Row 行级内容，更新、删除、查询使用
-type Row struct {
-	FormIndexFilePath string       // 索引文件所在路径
-	Key               string       // 索引对应字符串key
-	HashKey           uint64       // put hash keyStructure
-	mu                sync.RWMutex // 锁
-}
-
 // index 索引操作
 type index struct {
 	path string // path 存储文件路径
@@ -81,7 +73,7 @@ func (e *engine) mkFormTry(databaseID, formID, path string) {
 	if nil != db.forms[formID] {
 		return
 	}
-	db.forms[formID] = &form{path: path}
+	db.forms[formID] = &form{path: path, indexes: map[string]*index{}}
 }
 
 func (e *engine) mkIndexTry(databaseID, formID, indexID, path string) {
@@ -128,42 +120,27 @@ func (e *engine) index(databaseID, formID, indexID, formFilePath, formIndexFileP
 	return e.databases[databaseID].forms[formID].indexes[indexID]
 }
 
-type valueData struct {
-	K string      // key
-	I bool        // 是否有效
-	V interface{} // 存储数据
-}
+// Handler 存储回调
+//
+// 索引最终存储在文件中的起始位置
+//
+// value最终存储在文件中的起始位置
+//
+// value最终存储在文件中的持续长度
+type Handler func(SeekStartIndex int64, SeekStart int64, SeekLast int)
 
 // Write 索引即将写入的参考坐标
 type Write struct {
-	IndexID           string // 索引ID
-	FormIndexFilePath string // 索引文件所在路径
-	Key               string // 索引对应字符串key
-	HashKey           uint64 // put hash hashKey
-	SeekStartIndex    int64  // 上一索引最终存储在文件中的起始位置
-}
-
-// Written 完成索引写入后的结果
-type Written struct {
-	MD516Key       string // hash(keyStructure) 会发生碰撞，因此这里存储md5结果进行反向验证
-	SeekStartIndex int64  // 索引最终存储在文件中的起始位置
-	SeekStart      int64  // value最终存储在文件中的起始位置
-	SeekLast       int    // value最终存储在文件中的持续长度
-}
-
-// WrittenHelp 索引写入辅助对象
-type WrittenHelp struct {
-	writtenArr []*Written
-	err        error
-	mu         sync.Mutex
+	IndexID           string  // 索引ID
+	FormIndexFilePath string  // 索引文件所在路径
+	MD516Key          string  // 索引对应字符串key
+	HashKey           uint64  // put hash hashKey
+	SeekStartIndex    int64   // 上一索引最终存储在文件中的起始位置
+	Handler           Handler // 存储回调mu         sync.Mutex
 }
 
 // Read 数据读取结果
 type Read struct {
 	Key   string      // key
 	Value interface{} // value
-}
-
-func newWrittenHelp() *WrittenHelp {
-	return &WrittenHelp{writtenArr: []*Written{}}
 }

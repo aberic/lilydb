@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020. aberic
+ * Copyright (c) 2020 aberic
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,38 @@
  * SOFTWARE.
  */
 
-package comm
+package engine
 
 import (
-	"github/aberic/lilydb/config"
+	"errors"
+	"github.com/aberic/gnomon"
+	"github.com/aberic/lilydb/config"
+	"os"
 	"path/filepath"
-	"strings"
 )
 
-// pathFormIndexFile 表索引文件路径
-//
-// dataID 数据库唯一id
-//
-// formID 表唯一id
-//
-// indexID 表索引唯一id
-func PathFormIndexFile(dataID, formID, indexID string) string {
-	return strings.Join([]string{config.Obtain().DataDir, string(filepath.Separator), dataID, string(filepath.Separator), formID, string(filepath.Separator), indexID, ".idx"}, "")
-}
+var (
+	// ErrDatabaseExist 自定义error信息
+	ErrDatabaseExist = errors.New("database already exist")
+	// ErrDataNotFound 自定义error信息
+	ErrDataNotFound = errors.New("database not found")
+	// ErrFormNotFound 自定义error信息
+	ErrFormNotFound = errors.New("form not found")
+	//// ErrFormExist 自定义error信息
+	//ErrFormExist = errors.New("form already exist")
+	//// ErrKeyExist 自定义error信息
+	//ErrKeyExist = errors.New("key already exist")
+	//// ErrIndexExist 自定义error信息
+	//ErrIndexExist = errors.New("index already exist")
+	//// ErrKeyIsNil 自定义error信息
+	//ErrKeyIsNil = errors.New("put keyStructure can not be nil")
+)
 
-func PathFormDataFile(dataID, formID string) string {
-	return filepath.Join(config.Obtain().DataDir, dataID, formID, "form.dat")
-	//return strings.Join([]string{dataDir, string(filepath.Separator), dataID, string(filepath.Separator), formID, string(filepath.Separator), strconv.Itoa(fileIndex), ".dat"}, "")
+// mkDataDir 创建库存储目录
+func mkDataDir(dataName string) (err error) {
+	dataPath := filepath.Join(config.Obtain().DataDir, dataName)
+	if gnomon.FilePathExists(dataPath) {
+		return ErrDatabaseExist
+	}
+	return os.MkdirAll(dataPath, os.ModePerm)
 }

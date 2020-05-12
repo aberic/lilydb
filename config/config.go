@@ -28,27 +28,16 @@ import (
 	"errors"
 	"github.com/aberic/gnomon"
 	"github.com/aberic/gnomon/log"
-	api "github/aberic/lilydb/connector/grpc"
+	api "github.com/aberic/lilydb/connector/grpc"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"path/filepath"
 	"sync"
 )
 
-const (
-	// level1Distance level1间隔 65536^3 = 281474976710656 | 测试 4^3 = 64
-	level1Distance uint64 = 281474976710656
-	// level2Distance level2间隔 65536^2 = 4294967296 | 测试 4^2 = 16
-	level2Distance uint64 = 4294967296
-	// level3Distance level3间隔 65536^1 = 65536 | 测试 4^1 = 4
-	level3Distance uint64 = 65536
-	// level4Distance level4间隔 65536^0 = 1 | 测试 4^0 = 1
-	level4Distance uint64 = 1
-)
-
 var (
-	// Version 版本号
-	Version      = "1.0"
+	// version 版本号
+	version      = "1.0"
 	confInstance *Config
 	onceConfig   sync.Once
 )
@@ -116,6 +105,11 @@ func Obtain() *Config {
 	return confInstance
 }
 
+// Version 取得db版本号
+func (c *Config) Version() string {
+	return version
+}
+
 // scanDefault 扫描填充默认值
 func (c *Config) scanDefault() (*Config, error) {
 	if gnomon.StringIsEmpty(c.Port) {
@@ -172,8 +166,8 @@ func (c *Config) yaml2Config(filePath string) error {
 	return nil
 }
 
-// conf2API 转rpc对象
-func (c *Config) conf2RPC() *api.Config {
+// Conf2RPC 转rpc对象
+func (c *Config) Conf2RPC() *api.Config {
 	return &api.Config{
 		Port:                     c.Port,
 		RootDir:                  c.RootDir,
@@ -192,8 +186,8 @@ func (c *Config) conf2RPC() *api.Config {
 	}
 }
 
-// rpc2Config rpc转对象
-func (c *Config) rpc2Config(conf *api.Config) {
+// RPC2Config rpc转对象
+func (c *Config) RPC2Config(conf *api.Config) {
 	c.Port = conf.Port
 	c.RootDir = conf.RootDir
 	c.DataDir = conf.DataDir

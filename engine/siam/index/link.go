@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020. aberic
+ * Copyright (c) 2020 aberic
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,5 +22,40 @@
  * SOFTWARE.
  */
 
-// Package index 数据库索引服务
 package index
+
+type link struct {
+	md516Key       string
+	seekStartIndex int64 // 索引最终存储在文件中的起始位置
+	seekStart      int64 // value最终存储在文件中的起始位置
+	seekLast       int   // value最终存储在文件中的持续长度
+}
+
+// Fit 填充数据
+//
+// 索引最终存储在文件中的起始位置
+//
+// value最终存储在文件中的起始位置
+//
+// value最终存储在文件中的持续长度
+func (l *link) Fit(seekStartIndex int64, seekStart int64, seekLast int) {
+	l.seekStartIndex = seekStartIndex
+	l.seekStart = seekStart
+	l.seekLast = seekLast
+}
+
+func (l *link) MD516Key() string {
+	return l.md516Key
+}
+
+func (l *link) SeekStartIndex() int64 {
+	return l.seekStartIndex
+}
+
+func (l *link) SeekStart() int64 {
+	return l.seekStart
+}
+
+func (l *link) SeekLast() int {
+	return l.seekLast
+}

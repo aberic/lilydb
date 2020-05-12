@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020. aberic
+ * Copyright (c) 2020 aberic
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-package comm
+package utils
 
 import "hash/crc32"
 
-// String hashes a string to a unique hashcode.
+// Hash String hashes a string to a unique hashcode.
 func Hash(key string) uint64 {
 	return uint64(crc32.ChecksumIEEE([]byte(key)))
 }

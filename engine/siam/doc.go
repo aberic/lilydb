@@ -22,5 +22,5 @@
  * SOFTWARE.
  */
 
-// Package sim 静态索引方法(static indexing method)
-package sim
+// Package siam 静态索引方法(static index access method)
+package siam
