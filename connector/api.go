@@ -106,10 +106,10 @@ type Index interface {
 	//
 	// hashKey 索引key，可通过hash转换string生成
 	//
-	// value 存储对象
+	// version 当前索引数据版本号
 	//
 	// update 本次是否执行更新操作
-	Put(key string, hashKey uint64) (link Link, exist bool)
+	Put(key string, hashKey uint64, version int) (link Link, exist, versionGT bool)
 	// Get 获取数据，返回存储对象
 	//
 	// key 真实key，必须string类型
@@ -124,16 +124,19 @@ type Index interface {
 type Link interface {
 	// Fit 填充数据
 	//
-	// 索引最终存储在文件中的起始位置
+	// seekStartIndex 索引最终存储在文件中的起始位置
 	//
-	// value最终存储在文件中的起始位置
+	// seekStart value最终存储在文件中的起始位置
 	//
-	// value最终存储在文件中的持续长度
-	Fit(seekStartIndex int64, seekStart int64, seekLast int)
-	MD516Key() string      // 获取md516Key
-	SeekStartIndex() int64 // 索引最终存储在文件中的起始位置
-	SeekStart() int64      // value最终存储在文件中的起始位置
-	SeekLast() int         // value最终存储在文件中的持续长度
+	// seekLast value最终存储在文件中的持续长度
+	//
+	// version 当前索引数据版本号
+	Fit(seekStartIndex int64, seekStart int64, seekLast, version int)
+	MD516Key() string      // MD516Key 获取md516Key
+	SeekStartIndex() int64 // SeekStartIndex 索引最终存储在文件中的起始位置
+	SeekStart() int64      // SeekStart value最终存储在文件中的起始位置
+	SeekLast() int         // SeekLast value最终存储在文件中的持续长度
+	Version() int          // Version 当前索引数据版本号
 }
 
 // Selector 检索选择器

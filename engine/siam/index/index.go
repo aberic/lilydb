@@ -93,8 +93,8 @@ func (i *Index) KeyStructure() string {
 // value 存储对象
 //
 // update 本次是否执行更新操作
-func (i *Index) Put(md516Key string, hashKey uint64) (link connector.Link, exist bool) {
-	return i.node.put(md516Key, hashKey, hashKey)
+func (i *Index) Put(md516Key string, hashKey uint64, version int) (link connector.Link, exist, versionGT bool) {
+	return i.node.put(md516Key, hashKey, hashKey, version)
 }
 
 // Get 获取数据，返回存储对象
@@ -152,7 +152,7 @@ func (i *Index) read(file *os.File, offset int64) (err error) {
 		if len(data) == 0 {
 			return
 		}
-		if len(data)%42 != 0 { // 单条索引默认占用长度42个字符
+		if len(data)%utils.LenIndex != 0 { // 单条索引默认占用长度
 			return errors.New("index lens does't match")
 		}
 	}
@@ -160,25 +160,29 @@ func (i *Index) read(file *os.File, offset int64) (err error) {
 	indexStrLen := int64(len(indexStr))
 	for haveNext {
 		go func(i *Index, position int64) {
-			var p0, p1, p2, p3, p4 int64
-			// 读取11位key及16位md5后key及5位起始seek和4位持续seek
+			var p0, p1, p2, p3, p4, p5 int64
+			// 读取 11位hashKey + 16位md5Key + 11位起始seek + 4位持续seek + 4位版本号 = 46
 			p0 = position
-			p1 = p0 + 11
-			p2 = p1 + 16
-			p3 = p2 + 11
-			p4 = p3 + 4
+			p1 = p0 + utils.LenHashKey
+			p2 = p1 + utils.LenMD5Key
+			p3 = p2 + utils.LenSeekStart
+			p4 = p3 + utils.LenSeekLast
+			p5 = p4 + utils.LenVersion
 			hashKey := gnomon.ScaleDDuoStringToUint64(indexStr[p0:p1])
 			md516Key := indexStr[p1:p2]
 			seekStart := gnomon.ScaleDDuoStringToInt64(indexStr[p2:p3])     // value最终存储在文件中的起始位置
 			seekLast := int(gnomon.ScaleDDuoStringToInt64(indexStr[p3:p4])) // value最终存储在文件中的持续长度
+			version := int(gnomon.ScaleDDuoStringToInt64(indexStr[p4:p5]))
 			//log.Debug("read", log.Field("i", i), log.Field("node", i.node))
-			link, _ := i.node.put(md516Key, hashKey, hashKey)
-			link.Fit(p0, seekStart, seekLast)
-			// todo ID自增
-			//atomic.AddUint64(i.form.getAutoID(), 1) // ID自增
+			link, _, versionGT := i.node.put(md516Key, hashKey, hashKey, version)
+			if versionGT {
+				link.Fit(p0, seekStart, seekLast, version)
+				// todo ID自增
+				//atomic.AddUint64(i.form.getAutoID(), 1) // ID自增
+			}
 		}(i, position)
-		position += 42 // 单条索引默认占用长度42个字符
-		if indexStrLen < position+42 {
+		position += utils.LenIndex64 // 单条索引默认占用长度
+		if indexStrLen < position+utils.LenIndex64 {
 			haveNext = false
 		}
 	}

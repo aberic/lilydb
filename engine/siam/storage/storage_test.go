@@ -57,10 +57,10 @@ func TestObtain(t *testing.T) {
 }
 
 func TestStorage_Store(t *testing.T) {
-	err := Obtain().Store("databaseID", "formID", "value", []*Write{
+	err := Obtain().Store("databaseID1", "formID1", "value", []*Write{
 		{
 			IndexID:           "indexID",
-			FormIndexFilePath: utils.PathFormIndexFile("databaseID", "formID", "indexID"),
+			FormIndexFilePath: utils.PathFormIndexFile("databaseID1", "formID1", "indexID"),
 			MD516Key:          "key",
 			HashKey:           1234,
 			SeekStartIndex:    -1,
@@ -69,8 +69,8 @@ func TestStorage_Store(t *testing.T) {
 			},
 		},
 		{
-			IndexID:           "index2ID",
-			FormIndexFilePath: utils.PathFormIndexFile("databaseID", "formID", "index2ID"),
+			IndexID:           "indexID1",
+			FormIndexFilePath: utils.PathFormIndexFile("databaseID1", "formID1", "indexID1"),
 			MD516Key:          "key",
 			HashKey:           1234,
 			SeekStartIndex:    -1,
@@ -83,7 +83,7 @@ func TestStorage_Store(t *testing.T) {
 }
 
 func TestStorage_StoreFailIndexFilePath(t *testing.T) {
-	err := Obtain().Store("databaseID", "formID", "value", []*Write{
+	err := Obtain().Store("databaseID2", "formID2", "value", []*Write{
 		{
 			IndexID:           "indexID",
 			FormIndexFilePath: "/usr/tmp",

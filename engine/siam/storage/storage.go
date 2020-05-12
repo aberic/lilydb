@@ -33,7 +33,6 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"io"
 	"os"
-	"strings"
 	"sync"
 )
 
@@ -199,8 +198,8 @@ func (s *Storage) storeIndex(databaseID, formID, formFilePath string, seekStart 
 		}
 		idx.file = file
 	}
-	// 写入11位key及16位md5后key
-	appendStr := strings.Join([]string{gnomon.StringPrefixSupplementZero(gnomon.ScaleUint64ToDDuoString(write.HashKey), 11), write.MD516Key}, "")
+	// 11位hashKey + 16位md5Key = 27
+	appendStr := gnomon.StringBuild(gnomon.StringPrefixSupplementZero(gnomon.ScaleUint64ToDDuoString(write.HashKey), utils.LenHashKey), write.MD516Key)
 	//log.Debug("storeIndex", log.Field("md516Key", write.MD516Key), log.Field("appendStr", appendStr))
 	//log.Debug("storeIndex",
 	//	log.Field("appendStr", appendStr),
@@ -221,10 +220,11 @@ func (s *Storage) storeIndex(databaseID, formID, formFilePath string, seekStart 
 		}
 		//log.Debug("running", log.Field("seekStartIndex", write.SeekStartIndex), log.Field("it.link.seekStartIndex != -1", seekEnd))
 	}
-	// 写入11位key及16位md5后key及5位起始seek和4位持续seek
+	// 11位hashKey + 16位md5Key + 11位起始seek + 4位持续seek + 4位版本号 = 46
 	indexStr := gnomon.StringBuild(appendStr,
-		gnomon.StringPrefixSupplementZero(gnomon.ScaleInt64ToDDuoString(seekStart), 11),
-		gnomon.StringPrefixSupplementZero(gnomon.ScaleIntToDDuoString(seekLast), 4))
+		gnomon.StringPrefixSupplementZero(gnomon.ScaleInt64ToDDuoString(seekStart), utils.LenSeekStart),
+		gnomon.StringPrefixSupplementZero(gnomon.ScaleIntToDDuoString(seekLast), utils.LenSeekLast),
+		gnomon.StringPrefixSupplementZero(gnomon.ScaleIntToDDuoString(write.Version), utils.LenVersion))
 	//log.Debug("storeIndex", log.Field("indexStr", indexStr))
 	if _, err = idx.file.WriteString(indexStr); nil != err {
 		//log.Error("running", log.Field("seekStartIndex", seekEnd), log.Err(err))

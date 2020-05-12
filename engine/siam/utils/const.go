@@ -22,47 +22,21 @@
  * SOFTWARE.
  */
 
-package index
+package utils
 
-type link struct {
-	md516Key       string
-	seekStartIndex int64 // 索引最终存储在文件中的起始位置
-	seekStart      int64 // value最终存储在文件中的起始位置
-	seekLast       int   // value最终存储在文件中的持续长度
-	version        int   // 当前索引数据版本号
-}
-
-// Fit 填充数据
-//
-// seekStartIndex 索引最终存储在文件中的起始位置
-//
-// seekStart value最终存储在文件中的起始位置
-//
-// seekLast value最终存储在文件中的持续长度
-//
-// version 当前索引数据版本号
-func (l *link) Fit(seekStartIndex int64, seekStart int64, seekLast, version int) {
-	l.seekStartIndex = seekStartIndex
-	l.seekStart = seekStart
-	l.seekLast = seekLast
-}
-
-func (l *link) MD516Key() string {
-	return l.md516Key
-}
-
-func (l *link) SeekStartIndex() int64 {
-	return l.seekStartIndex
-}
-
-func (l *link) SeekStart() int64 {
-	return l.seekStart
-}
-
-func (l *link) SeekLast() int {
-	return l.seekLast
-}
-
-func (l *link) Version() int {
-	return l.version
-}
+const (
+	// 11位hashKey
+	LenHashKey = 11
+	// 16位md5Key
+	LenMD5Key = 16
+	// 11位起始seek
+	LenSeekStart = 11
+	// 4位持续seek
+	LenSeekLast = 4
+	// 4位版本号
+	LenVersion = 4
+	// 单条索引长度 = 46
+	LenIndex = 46
+	// 单条索引长度 = 46
+	LenIndex64 int64 = 46
+)

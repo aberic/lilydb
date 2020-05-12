@@ -27,18 +27,18 @@ package index
 import "testing"
 
 func newIndex(databaseID, formID string) *Index {
-	return NewIndex(databaseID, formID, "indexID", "lily_do_not_repeat_auto_id", true)
+	return NewIndex(databaseID, formID, "indexID", "indexID", true)
 }
 
 func linkFit() *link {
 	link := &link{md516Key: "md516"}
-	link.Fit(1, 2, 3)
+	link.Fit(1, 2, 3, 0)
 	return link
 }
 
 func TestLink_Fit(t *testing.T) {
 	link := &link{md516Key: "md516"}
-	link.Fit(1, 2, 3)
+	link.Fit(1, 2, 3, 0)
 	t.Log(link)
 }
 
@@ -79,21 +79,20 @@ func TestIndex_Primary(t *testing.T) {
 
 func TestIndex_Put(t *testing.T) {
 	idx := newIndex("database", "form")
-	link, exist := idx.Put("md516", 1)
-	t.Log(link, exist)
+	link, exist, versionGT := idx.Put("md516", 1, 0)
+	t.Log(link, exist, versionGT)
 }
 
 func TestIndex_Get(t *testing.T) {
 	idx := newIndex("database", "form")
-	_, _ = idx.Put("md516", 1)
+	_, _, _ = idx.Put("md516", 1, 0)
 	link := idx.Get("md516", 1)
 	t.Log(link)
 }
 
 func TestIndex_GetFail(t *testing.T) {
 	idx := newIndex("database", "form")
-	_, _ = idx.Put("md516", 1)
-	link := idx.Get("md516", 2)
+	link := idx.Get("md516", 1)
 	t.Log(link)
 }
 
@@ -150,7 +149,13 @@ func TestNewSelectorFail(t *testing.T) {
 }
 
 func TestSelector_Run(t *testing.T) {
-	var indexes = []*Index{newIndex("database", "form")}
+	var (
+		idx     = newIndex("database", "form")
+		indexes = []*Index{idx}
+	)
+	if err := idx.Recover(); nil != err {
+		t.Error(err)
+	}
 	selector, err := NewSelector([]byte(selectorJSONString), indexes, "database", "form", false)
 	if nil != err {
 		t.Error(err)

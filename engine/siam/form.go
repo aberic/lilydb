@@ -246,7 +246,7 @@ func (f *Form) store(value interface{}, update bool) error {
 				}
 			}
 			md516Key := gnomon.HashMD516(key)
-			link, exist := f.indexes[index.ID()].Put(md516Key, hashKey)
+			link, exist, _ := f.indexes[index.ID()].Put(md516Key, hashKey, 0)
 			if !update && exist { // 如果当前是插入操作，且已存在对应key的值
 				err = fmt.Errorf("the same key %s already exist", index.KeyStructure())
 				return
@@ -260,7 +260,7 @@ func (f *Form) store(value interface{}, update bool) error {
 				HashKey:           hashKey,
 				SeekStartIndex:    link.SeekStartIndex(),
 				Handler: func(SeekStartIndex int64, SeekStart int64, SeekLast int) {
-					link.Fit(SeekStartIndex, SeekStart, SeekLast)
+					link.Fit(SeekStartIndex, SeekStart, SeekLast, 0)
 				},
 			})
 

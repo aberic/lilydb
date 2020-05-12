@@ -136,5 +136,6 @@ type Write struct {
 	MD516Key          string  // 索引对应字符串key
 	HashKey           uint64  // put hash hashKey
 	SeekStartIndex    int64   // 上一索引最终存储在文件中的起始位置
+	Version           int     // 当前索引数据版本号
 	Handler           Handler // 存储回调mu         sync.Mutex
 }

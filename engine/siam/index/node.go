@@ -54,8 +54,10 @@ type node struct {
 //
 // flexibleKey 下一级最左最小树所对应真实key
 //
+// version 当前索引数据版本号
+//
 // return exist 返回是否存在
-func (n *node) put(md516Key string, hashKey, flexibleKey uint64) (link *link, exist bool) {
+func (n *node) put(md516Key string, hashKey, flexibleKey uint64, version int) (link *link, exist, versionGT bool) {
 	var (
 		nextDegree      uint16 // 下一节点所在当前节点下度的坐标
 		nextFlexibleKey uint64 // 下一级最左最小树所对应真实key
@@ -73,9 +75,9 @@ func (n *node) put(md516Key string, hashKey, flexibleKey uint64) (link *link, ex
 			nd = n.createNode(nextDegree)
 		}
 	} else {
-		return n.link(md516Key)
+		return n.link(md516Key, version)
 	}
-	return nd.put(md516Key, hashKey, nextFlexibleKey)
+	return nd.put(md516Key, hashKey, nextFlexibleKey, version)
 }
 
 // get 获取数据，返回存储数据的可检索对象
@@ -152,15 +154,24 @@ func (n *node) createLeaf(index uint16) *node {
 	return n.nodes[realIndex]
 }
 
-func (n *node) link(md516Key string) (lk *link, exist bool) {
+// link 获取link叶子，如果存在，则判断版本号，如果不存在，则新建一个空并返回
+//
+// md516Key 索引md516Key
+//
+// version 当前索引数据版本号
+func (n *node) link(md516Key string, version int) (lk *link, exist, versionGT bool) {
 	if pos, exist := n.existLink(md516Key); exist {
-		return n.links[pos], true
+		lk = n.links[pos]
+		if version > lk.version {
+			return n.links[pos], true, true
+		}
+		return n.links[pos], true, false
 	}
 	defer n.mu.Unlock()
 	n.mu.Lock()
-	lk = &link{md516Key: md516Key}
+	lk = &link{md516Key: md516Key, version: version}
 	n.links = append(n.links, lk)
-	return lk, false
+	return lk, false, true
 }
 
 func (n *node) existLink(md516Key string) (int, bool) {
