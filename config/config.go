@@ -158,11 +158,14 @@ func (c *Config) yaml2Config(filePath string) error {
 		return err
 	}
 	ymlConfig := YamlConfig{}
-	err = yaml.Unmarshal([]byte(data), &ymlConfig)
+	err = yaml.Unmarshal(data, &ymlConfig)
 	if err != nil {
 		return err
 	}
 	confInstance = ymlConfig.Config
+	if nil == confInstance {
+		return errors.New("yaml trans config fail")
+	}
 	return nil
 }
 

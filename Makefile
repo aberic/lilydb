@@ -1,4 +1,4 @@
-PKGS_PASS := $(shell go list ./... | grep -v 'connector/grpc/*')
+PKGS_PASS := $(shell go list ./... | grep -v 'example/\|connector/grpc/*')
 GO_FILES := $(shell find . -name "*.go" -not -path "./vendor/*" -not -path ".git/*" -print0 | xargs -0)
 
 checkLocal: vet lint misspell staticcheck cyclo const test
