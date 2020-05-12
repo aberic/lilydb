@@ -26,8 +26,8 @@ package index
 
 import "testing"
 
-func newIndex() *Index {
-	return NewIndex("indexID", "lily_do_not_repeat_auto_id", true)
+func newIndex(databaseID, formID string) *Index {
+	return NewIndex(databaseID, formID, "indexID", "lily_do_not_repeat_auto_id", true)
 }
 
 func linkFit() *link {
@@ -59,62 +59,62 @@ func TestLink_SeekLast(t *testing.T) {
 }
 
 func TestNewIndex(t *testing.T) {
-	t.Log(NewIndex("indexID", "id", true))
+	t.Log(NewIndex("database", "form", "indexID", "id", true))
 }
 
 func TestIndex_ID(t *testing.T) {
-	idx := newIndex()
+	idx := newIndex("database", "form")
 	t.Log(idx.ID())
 }
 
 func TestIndex_KeyStructure(t *testing.T) {
-	idx := newIndex()
+	idx := newIndex("database", "form")
 	t.Log(idx.KeyStructure())
 }
 
 func TestIndex_Primary(t *testing.T) {
-	idx := newIndex()
+	idx := newIndex("database", "form")
 	t.Log(idx.Primary())
 }
 
 func TestIndex_Put(t *testing.T) {
-	idx := newIndex()
+	idx := newIndex("database", "form")
 	link, exist := idx.Put("md516", 1)
 	t.Log(link, exist)
 }
 
 func TestIndex_Get(t *testing.T) {
-	idx := newIndex()
+	idx := newIndex("database", "form")
 	_, _ = idx.Put("md516", 1)
 	link := idx.Get("md516", 1)
 	t.Log(link)
 }
 
 func TestIndex_GetFail(t *testing.T) {
-	idx := newIndex()
+	idx := newIndex("database", "form")
 	_, _ = idx.Put("md516", 1)
 	link := idx.Get("md516", 2)
 	t.Log(link)
 }
 
 func TestIndex_Recover(t *testing.T) {
-	idx := newIndex()
-	t.Skip(idx.Recover("database", "form"))
+	idx := newIndex("database", "form")
+	t.Skip(idx.Recover())
 }
 
 func TestIndex_RecoverLenMatchFail(t *testing.T) {
-	idx := newIndex()
-	t.Skip(idx.Recover("database", "form1"))
+	idx := newIndex("database", "form1")
+	t.Skip(idx.Recover())
 }
 
 func TestIndex_RecoverDataEmptyFail(t *testing.T) {
-	idx := newIndex()
-	t.Skip(idx.Recover("database", "form2"))
+	idx := newIndex("database", "form2")
+	t.Skip(idx.Recover())
 }
 
 func TestIndex_RecoverNoFile(t *testing.T) {
-	idx := newIndex()
-	t.Skip(idx.Recover("database1", "form"))
+	idx := newIndex("database1", "form")
+	t.Skip(idx.Recover())
 }
 
 var selectorJSONString = `{
@@ -136,21 +136,21 @@ var selectorJSONString = `{
 var selectorErrorJSONString = `error`
 
 func TestNewSelector(t *testing.T) {
-	var indexes = []*Index{newIndex()}
+	var indexes = []*Index{newIndex("database", "form")}
 	selector, err := NewSelector([]byte(selectorJSONString), indexes, "database", "form", false)
 	t.Log(selector)
 	t.Log(err)
 }
 
 func TestNewSelectorFail(t *testing.T) {
-	var indexes = []*Index{newIndex()}
+	var indexes = []*Index{newIndex("database", "form")}
 	selector, err := NewSelector([]byte(selectorErrorJSONString), indexes, "database", "form", false)
 	t.Log(selector)
 	t.Log(err)
 }
 
 func TestSelector_Run(t *testing.T) {
-	var indexes = []*Index{newIndex()}
+	var indexes = []*Index{newIndex("database", "form")}
 	selector, err := NewSelector([]byte(selectorJSONString), indexes, "database", "form", false)
 	if nil != err {
 		t.Error(err)
