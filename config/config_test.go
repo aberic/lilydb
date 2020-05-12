@@ -79,6 +79,15 @@ func TestInitConfigFileNotFoundFail(t *testing.T) {
 	t.Log(InitConfig("example/conf6.yaml"))
 }
 
+func TestInitConfigFilepathEmptyFail(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Log("recover...:", r)
+		}
+	}()
+	t.Log(InitConfig(""))
+}
+
 func TestConfig_Version(t *testing.T) {
 	t.Log(Obtain().Version())
 }
