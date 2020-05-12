@@ -37,17 +37,23 @@ import (
 
 // NewIndex 新建索引
 //
+// databaseID 数据库唯一ID
+//
+// formID 表唯一ID
+//
 // id 索引唯一ID
 //
 // keyStructure 按照规范结构组成的索引字段名称，由对象结构层级字段通过'.'组成，如'i','in.s'
 //
 // primary 是否主键
-func NewIndex(id, keyStructure string, primary bool) *Index {
+func NewIndex(databaseID, formID, id, keyStructure string, primary bool) *Index {
 	return &Index{
 		id:           id,
 		primary:      primary,
 		keyStructure: keyStructure,
 		node:         &node{level: 1, degreeIndex: 0, preNode: nil, nodes: []*node{}},
+		databaseID:   databaseID,
+		formID:       formID,
 	}
 }
 
@@ -59,6 +65,8 @@ type Index struct {
 	primary      bool   // 是否主键
 	keyStructure string // keyStructure 按照规范结构组成的索引字段名称，由对象结构层级字段通过'.'组成，如'i','in.s'
 	node         *node  // 节点
+	databaseID   string // 所属数据库ID
+	formID       string // 所属表ID
 }
 
 // ID 索引唯一ID
@@ -99,8 +107,8 @@ func (i *Index) Get(md516Key string, hashKey uint64) connector.Link {
 }
 
 // Recover 重置索引数据
-func (i *Index) Recover(databaseID, formID string) error {
-	indexFilePath := utils.PathFormIndexFile(databaseID, formID, i.id)
+func (i *Index) Recover() error {
+	indexFilePath := utils.PathFormIndexFile(i.databaseID, i.formID, i.id)
 	if gnomon.FilePathExists(indexFilePath) { // 索引文件存在才继续恢复
 		var (
 			file *os.File
@@ -124,6 +132,7 @@ func (i *Index) Recover(databaseID, formID string) error {
 	return nil
 }
 
+// todo 回传错误
 func (i *Index) read(file *os.File, offset int64) (err error) {
 	var (
 		inputReader *bufio.Reader

@@ -41,15 +41,24 @@ import (
 const indexAutoID = "lily_do_not_repeat_auto_id"
 
 // NewForm 新建表，会创建默认自增主键
-func NewForm(formID, formName, comment string) *Form {
+//
+// 所属数据库ID
+//
+// formID 表唯一ID
+//
+// formName 表名，根据需求可以随时变化
+//
+// comment 描述
+func NewForm(databaseID, formID, formName, comment string) *Form {
 	var autoID uint64 = 0
 	fm := &Form{
-		autoID:   &autoID,
-		name:     formName,
-		id:       formID,
-		comment:  comment,
-		indexes:  map[string]*index.Index{},
-		formType: connector.FormTypeSiam,
+		autoID:     &autoID,
+		name:       formName,
+		id:         formID,
+		comment:    comment,
+		indexes:    map[string]*index.Index{},
+		formType:   connector.FormTypeSiam,
+		databaseID: databaseID,
 	}
 	fm.NewIndex(indexAutoID, true) // 创建默认自增主键
 	return fm
@@ -57,13 +66,15 @@ func NewForm(formID, formName, comment string) *Form {
 
 // Form 表结构
 type Form struct {
-	id       string                  // 表唯一ID，不能改变
-	name     string                  // 表名，根据需求可以随时变化
-	autoID   *uint64                 // 自增id
-	comment  string                  // 描述
-	formType connector.FormType      // 表类型 siam
-	indexes  map[string]*index.Index // 索引ID集合
-	mu       sync.RWMutex
+	id         string                  // 表唯一ID，不能改变
+	name       string                  // 表名，根据需求可以随时变化
+	autoID     *uint64                 // 自增id
+	comment    string                  // 描述
+	formType   connector.FormType      // 表类型 siam
+	indexes    map[string]*index.Index // 索引ID集合
+	databaseID string                  // 所属数据库ID
+
+	mu sync.RWMutex
 }
 
 // AtomicAddAutoID 自增ID
@@ -105,7 +116,7 @@ func (f *Form) NewIndex(keyStructure string, primary bool) {
 	defer f.mu.Unlock()
 	f.mu.Lock()
 	indexID := f.name2ID4Index(strings.Join([]string{f.name, keyStructure}, "_"))
-	f.indexes[indexID] = index.NewIndex(indexID, keyStructure, primary)
+	f.indexes[indexID] = index.NewIndex(f.databaseID, f.id, indexID, keyStructure, primary)
 }
 
 // name2ID4Index 确保表下索引唯一ID不重复
@@ -132,12 +143,12 @@ func (f *Form) name2ID4Index(name string) string {
 // value 插入数据对象
 //
 // 返回 hashKey
-func (f *Form) Insert(databaseID string, value interface{}) (uint64, error) {
+func (f *Form) Insert(value interface{}) (uint64, error) {
 	//gnomon.Log().Debug("insertDataWithIndexInfo", gnomon.Log().Field("ibs", ibs))
 	defer f.mu.Unlock()
 	f.mu.Lock()
 	// 遍历表索引ID集合，检索并计算当前索引所在文件位置，存储结果
-	if err := f.store(databaseID, value, false); nil != err {
+	if err := f.store(value, false); nil != err {
 		return 0, err
 	}
 	return *f.autoID, nil
@@ -150,12 +161,12 @@ func (f *Form) Insert(databaseID string, value interface{}) (uint64, error) {
 // value 插入数据对象
 //
 // 返回 hashKey
-func (f *Form) Update(databaseID string, value interface{}) (uint64, error) {
+func (f *Form) Update(value interface{}) (uint64, error) {
 	//gnomon.Log().Debug("insertDataWithIndexInfo", gnomon.Log().Field("ibs", ibs))
 	defer f.mu.Unlock()
 	f.mu.Lock()
 	// 遍历表索引ID集合，检索并计算当前索引所在文件位置，存储结果
-	if err := f.store(databaseID, value, true); nil != err {
+	if err := f.store(value, true); nil != err {
 		return 0, err
 	}
 	return *f.autoID, nil
@@ -172,12 +183,12 @@ func (f *Form) Update(databaseID string, value interface{}) (uint64, error) {
 // return values 检索结果集合
 //
 // return err 检索错误信息，如果有
-func (f *Form) Select(databaseID string, selectorBytes []byte) (int32, []interface{}, error) {
+func (f *Form) Select(selectorBytes []byte) (int32, []interface{}, error) {
 	var indexes []*index.Index
 	for _, idx := range f.indexes {
 		indexes = append(indexes, idx)
 	}
-	selector, err := index.NewSelector(selectorBytes, indexes, databaseID, f.id, false)
+	selector, err := index.NewSelector(selectorBytes, indexes, f.databaseID, f.id, false)
 	if nil != err {
 		return 0, nil, err
 	}
@@ -194,12 +205,12 @@ func (f *Form) Select(databaseID string, selectorBytes []byte) (int32, []interfa
 // return count 删除结果总条数
 //
 // return err 删除错误信息，如果有
-func (f *Form) Delete(databaseID string, selectorBytes []byte) (int32, error) {
+func (f *Form) Delete(selectorBytes []byte) (int32, error) {
 	var indexes []*index.Index
 	for _, idx := range f.indexes {
 		indexes = append(indexes, idx)
 	}
-	selector, err := index.NewSelector(selectorBytes, indexes, databaseID, f.id, true)
+	selector, err := index.NewSelector(selectorBytes, indexes, f.databaseID, f.id, true)
 	if nil != err {
 		return 0, err
 	}
@@ -208,7 +219,7 @@ func (f *Form) Delete(databaseID string, selectorBytes []byte) (int32, error) {
 }
 
 // rangeIndexes 遍历表索引ID集合，检索并计算所有索引返回对象集合
-func (f *Form) store(databaseID string, value interface{}, update bool) error {
+func (f *Form) store(value interface{}, update bool) error {
 	var (
 		wg     sync.WaitGroup
 		writes []*storage.Write
@@ -244,7 +255,7 @@ func (f *Form) store(databaseID string, value interface{}, update bool) error {
 			wMu.Lock()
 			writes = append(writes, &storage.Write{
 				IndexID:           index.ID(),
-				FormIndexFilePath: utils.PathFormIndexFile(databaseID, f.id, index.ID()),
+				FormIndexFilePath: utils.PathFormIndexFile(f.databaseID, f.id, index.ID()),
 				MD516Key:          md516Key,
 				HashKey:           hashKey,
 				SeekStartIndex:    link.SeekStartIndex(),
@@ -259,7 +270,7 @@ func (f *Form) store(databaseID string, value interface{}, update bool) error {
 	if nil != err {
 		return err
 	}
-	return storage.Obtain().Store(databaseID, f.id, value, writes)
+	return storage.Obtain().Store(f.databaseID, f.id, value, writes)
 }
 
 // getCustomIndex 获取自定义索引预插入返回对象

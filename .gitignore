@@ -21,3 +21,4 @@ out
 # vendor/
 /engine/siam/storage/lilyDB/
 /config/lily/
+/engine/siam/lilyDB/

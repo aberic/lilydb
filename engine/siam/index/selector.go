@@ -84,8 +84,6 @@ func (s *Selector) Run() (int32, []interface{}) {
 		leftQuery bool
 		nc        *nodeCondition
 		pcs       map[string]*paramCondition
-		count     int32
-		is        []interface{}
 	)
 	idx, leftQuery, nc, pcs = s.index()
 	log.Debug("query", log.Field("index", idx.KeyStructure()))
@@ -93,11 +91,9 @@ func (s *Selector) Run() (int32, []interface{}) {
 		s.Limit = 1000
 	}
 	if leftQuery {
-		count, is = s.leftQueryIndex(idx, nc, pcs)
-	} else {
-		count, is = s.rightQueryIndex(idx, nc, pcs)
+		return s.leftQueryIndex(idx, nc, pcs)
 	}
-	return count, is
+	return s.rightQueryIndex(idx, nc, pcs)
 }
 
 // getIndex 根据检索条件获取使用索引对象

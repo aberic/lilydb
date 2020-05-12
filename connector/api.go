@@ -48,7 +48,7 @@ type Form interface {
 	// value 插入数据对象
 	//
 	// 返回 hashKey
-	Insert(databaseID string, value interface{}) (uint64, error)
+	Insert(value interface{}) (uint64, error)
 	// Update 更新数据，如果存在数据，则更新，如不存在，则插入
 	//
 	// databaseID 数据库唯一ID
@@ -56,7 +56,7 @@ type Form interface {
 	// value 插入数据对象
 	//
 	// 返回 hashKey
-	Update(databaseID string, value interface{}) (uint64, error)
+	Update(value interface{}) (uint64, error)
 	// Select 根据条件检索
 	//
 	// databaseID 数据库唯一ID
@@ -68,7 +68,7 @@ type Form interface {
 	// return values 检索结果集合
 	//
 	// return err 检索错误信息，如果有
-	Select(databaseID string, selectorBytes []byte) (count int32, values []interface{}, err error)
+	Select(selectorBytes []byte) (count int32, values []interface{}, err error)
 	// Delete 根据条件删除
 	//
 	// databaseID 数据库唯一ID
@@ -78,7 +78,7 @@ type Form interface {
 	// return count 删除结果总条数
 	//
 	// return err 删除错误信息，如果有
-	Delete(databaseID string, selectorBytes []byte) (count int32, err error)
+	Delete(selectorBytes []byte) (count int32, err error)
 }
 
 // Index 索引接口
@@ -117,7 +117,7 @@ type Index interface {
 	// hashKey 索引key，可通过hash转换string生成
 	Get(key string, hashKey uint64) Link
 	// Recover 重置索引数据
-	Recover(databaseID, formID string) error
+	Recover() error
 }
 
 // Link 叶子节点下的链表对象接口

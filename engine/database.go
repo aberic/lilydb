@@ -53,34 +53,34 @@ func (db *database) newForm(formID, formName, comment string, formType connector
 	default:
 		panic("form type error")
 	case connector.FormTypeSiam:
-		db.forms[formID] = siam.NewForm(formID, formName, comment)
+		db.forms[formID] = siam.NewForm(db.id, formID, formName, comment)
 	}
 }
 
 func (db *database) insert(formID string, value interface{}) (uint64, error) {
 	if fm, exist := db.forms[formID]; exist {
-		return fm.Insert(db.id, value)
+		return fm.Insert(value)
 	}
 	return 0, ErrFormNotFound
 }
 
 func (db *database) update(formID string, value interface{}) (uint64, error) {
 	if fm, exist := db.forms[formID]; exist {
-		return fm.Update(db.id, value)
+		return fm.Update(value)
 	}
 	return 0, ErrFormNotFound
 }
 
 func (db *database) query(formID string, selectorBytes []byte) (int32, []interface{}, error) {
 	if fm, exist := db.forms[formID]; exist {
-		return fm.Select(db.id, selectorBytes)
+		return fm.Select(selectorBytes)
 	}
 	return 0, nil, ErrFormNotFound
 }
 
 func (db *database) delete(formID string, selectorBytes []byte) (int32, error) {
 	if fm, exist := db.forms[formID]; exist {
-		return fm.Delete(db.id, selectorBytes)
+		return fm.Delete(selectorBytes)
 	}
 	return 0, ErrFormNotFound
 }
