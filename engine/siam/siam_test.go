@@ -88,8 +88,10 @@ func TestForm_Insert(t *testing.T) {
 func TestForm_Select(t *testing.T) {
 	fm := form()
 	for _, idx := range fm.indexes {
-		if err := idx.Recover(); nil != err {
+		if autoID, err := idx.Recover(); nil != err {
 			t.Skip(err) // todo
+		} else {
+			t.Log(autoID)
 		}
 	}
 	t.Log(fm.Select([]byte(selectorJSONString)))

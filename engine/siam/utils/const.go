@@ -25,18 +25,22 @@
 package utils
 
 const (
-	// 11位hashKey
+	// LenHashKey 11位hashKey
 	LenHashKey = 11
-	// 16位md5Key
+	// LenMD5Key 16位md5Key
 	LenMD5Key = 16
-	// 11位起始seek
+	// LenSeekStart 11位起始seek
 	LenSeekStart = 11
-	// 4位持续seek
+	// LenSeekLast 4位持续seek
 	LenSeekLast = 4
-	// 4位版本号
+	// LenVersion 4位版本号
 	LenVersion = 4
-	// 单条索引长度 = 46
+	// LenIndex 单条索引长度 = 46
 	LenIndex = 46
-	// 单条索引长度 = 46
+	// LenIndex64 单条索引长度 = 46
 	LenIndex64 int64 = 46
+	// LenPeekOnce 单次恢复索引长度 = 46000
+	LenPeekOnce = 46000
+	// LenPeekOnce64 单次恢复索引长度 = 46000
+	LenPeekOnce64 int64 = 46000
 )

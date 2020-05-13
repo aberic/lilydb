@@ -229,7 +229,7 @@ func (f *Form) store(value interface{}, update bool) error {
 	// 遍历表索引ID集合，检索并计算当前索引所在文件位置
 	for _, idx := range f.indexes {
 		wg.Add(1)
-		go func(index connector.Index) {
+		go func(index *index.Index) {
 			defer wg.Done()
 			var (
 				key     string
@@ -274,7 +274,7 @@ func (f *Form) store(value interface{}, update bool) error {
 }
 
 // getCustomIndex 获取自定义索引预插入返回对象
-func (f *Form) getCustomIndex(idx connector.Index, value interface{}) (key string, hashKey uint64, err error) {
+func (f *Form) getCustomIndex(idx *index.Index, value interface{}) (key string, hashKey uint64, err error) {
 	reflectValue := reflect.ValueOf(value) // 反射对象，通过reflectObj获取存储在里面的值，还可以去改变值
 	params := strings.Split(idx.KeyStructure(), ".")
 	switch kind := reflectValue.Kind(); kind {

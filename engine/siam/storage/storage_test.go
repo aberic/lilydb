@@ -44,7 +44,7 @@ func TestObtain(t *testing.T) {
 				IndexID:           "indexID",
 				FormIndexFilePath: utils.PathFormIndexFile("databaseID", "formID", "indexID"),
 				MD516Key:          gnomon.HashMD516(strconv.Itoa(i)),
-				HashKey:           1234,
+				HashKey:           uint64(i + 1),
 				SeekStartIndex:    -1,
 				Handler: func(SeekStartIndex int64, SeekStart int64, SeekLast int) {
 					t.Log(SeekStartIndex, SeekStart, SeekLast)

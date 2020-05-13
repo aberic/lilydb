@@ -24,6 +24,8 @@
 
 package index
 
+import "errors"
+
 const (
 	// level1Distance level1间隔 65536^3 = 281474976710656 | 测试 4^3 = 64
 	level1Distance uint64 = 281474976710656
@@ -33,6 +35,11 @@ const (
 	level3Distance uint64 = 65536
 	// level4Distance level4间隔 65536^0 = 1 | 测试 4^0 = 1
 	level4Distance uint64 = 1
+)
+
+var (
+	// ErrIndexFileNotFound 自定义error信息
+	ErrIndexFileNotFound = errors.New("index file not found")
 )
 
 // levelDistance 根据节点所在层级获取当前节点内部子节点之间的差

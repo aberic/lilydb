@@ -45,8 +45,8 @@ type condition struct {
 	Value interface{} `json:"Value"` // 比较对象，支持int、string、float和bool
 }
 
-// sort 排序方式
-type sort struct {
+// rank 排序方式
+type rank struct {
 	// 参数名，由对象结构层级字段通过'.'组成，如
 	//
 	// ref := &ref{

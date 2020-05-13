@@ -64,7 +64,7 @@ type Selector struct {
 	indexes    []*Index     // indexes 指定表下索引集合
 	Conditions []*condition `json:"Conditions"` // Conditions 条件查询
 	Skip       uint32       `json:"Skip"`       // Skip 结果集跳过数量
-	Sort       *sort        `json:"Sort"`       // Sort 排序方式
+	Sort       *rank        `json:"Sort"`       // Sort 排序方式
 	Limit      uint32       `json:"Limit"`      // Limit 结果集顺序数量
 	databaseID string       // 数据库唯一ID
 	formID     string       // 表唯一ID

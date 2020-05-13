@@ -153,8 +153,10 @@ func TestSelector_Run(t *testing.T) {
 		idx     = newIndex("database", "form")
 		indexes = []*Index{idx}
 	)
-	if err := idx.Recover(); nil != err {
+	if autoID, err := idx.Recover(); nil != err {
 		t.Error(err)
+	} else {
+		t.Log(*autoID)
 	}
 	selector, err := NewSelector([]byte(selectorJSONString), indexes, "database", "form", false)
 	if nil != err {

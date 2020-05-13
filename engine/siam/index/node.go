@@ -26,6 +26,7 @@ package index
 
 import (
 	"errors"
+	"sort"
 	"strings"
 	"sync"
 )
@@ -70,9 +71,9 @@ func (n *node) put(md516Key string, hashKey, flexibleKey uint64, version int) (l
 		nextDegree = uint16(flexibleKey / distance)
 		nextFlexibleKey = flexibleKey - uint64(nextDegree)*distance
 		if n.level == 4 {
-			nd = n.createLeaf(nextDegree)
+			nd = n.createOrTakeLeaf(nextDegree) // 创建或获取下一个叶子节点
 		} else {
-			nd = n.createNode(nextDegree)
+			nd = n.createOrTakeNode(nextDegree) // 创建或获取下一个子节点
 		}
 	} else {
 		return n.link(md516Key, version)
@@ -114,7 +115,7 @@ func (n *node) existNode(index uint16) (realIndex int, err error) {
 	return n.binaryMatchData(index)
 }
 
-func (n *node) createNode(index uint16) *node {
+func (n *node) createOrTakeNode(index uint16) *node {
 	var (
 		realIndex int
 		err       error
@@ -129,12 +130,12 @@ func (n *node) createNode(index uint16) *node {
 			preNode:     n,
 			nodes:       []*node{},
 		}
-		return n.appendNodal(index, newNode)
+		return n.appendNodal(newNode)
 	}
 	return n.nodes[realIndex]
 }
 
-func (n *node) createLeaf(index uint16) *node {
+func (n *node) createOrTakeLeaf(index uint16) *node {
 	var (
 		realIndex int
 		err       error
@@ -149,7 +150,7 @@ func (n *node) createLeaf(index uint16) *node {
 			preNode:     n,
 			links:       []*link{},
 		}
-		return n.appendNodal(index, leaf)
+		return n.appendNodal(leaf)
 	}
 	return n.nodes[realIndex]
 }
@@ -186,25 +187,28 @@ func (n *node) existLink(md516Key string) (int, bool) {
 	return 0, false
 }
 
-func (n *node) appendNodal(index uint16, nodal *node) *node {
+func (n *node) appendNodal(node *node) *node {
 	nodesLen := len(n.nodes)
 	if nodesLen == 0 {
-		n.nodes = append(n.nodes, nodal)
-		return nodal
+		n.nodes = append(n.nodes, node)
+		return node
 	}
-	n.nodes = append(n.nodes, nil)
-	for i := nodesLen - 2; i >= 0; i-- {
-		if n.nodes[i].degreeIndex < index {
-			n.nodes[i+1] = nodal
-			break
-		} else if n.nodes[i].degreeIndex > index {
-			n.nodes[i+1] = n.nodes[i]
-			n.nodes[i] = nodal
-		} else {
-			return n.nodes[i]
-		}
-	}
-	return nodal
+	n.nodes = append(n.nodes, node)
+	sort.Slice(n.nodes, func(i, j int) bool {
+		return n.nodes[i].degreeIndex < n.nodes[j].degreeIndex
+	})
+	//for i := nodesLen - 2; i >= 0; i-- {
+	//	if n.nodes[i].degreeIndex < index {
+	//		n.nodes[i+1] = node
+	//		break
+	//	} else if n.nodes[i].degreeIndex > index {
+	//		n.nodes[i+1] = n.nodes[i]
+	//		n.nodes[i] = node
+	//	} else {
+	//		return n.nodes[i]
+	//	}
+	//}
+	return node
 }
 
 // binaryMatchData 'Nodal'内子节点数组二分查找基本方法
