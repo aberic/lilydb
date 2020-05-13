@@ -33,14 +33,14 @@ func newIndex(databaseID, formID string) *Index {
 	return NewIndex(databaseID, formID, "indexID", "indexID", true)
 }
 
-func linkFit() *link {
-	link := &link{md516Key: "md516"}
+func linkFit() *Link {
+	link := &Link{md516Key: "md516"}
 	link.Fit(1, 2, 3, 0)
 	return link
 }
 
 func TestLink_Fit(t *testing.T) {
-	link := &link{md516Key: "md516"}
+	link := &Link{md516Key: "md516"}
 	link.Fit(1, 2, 3, 0)
 	t.Log(link)
 }

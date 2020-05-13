@@ -27,7 +27,6 @@ package index
 import (
 	"encoding/json"
 	"github.com/aberic/gnomon/log"
-	"github.com/aberic/lilydb/connector"
 	"github.com/aberic/lilydb/engine/siam/storage"
 	"github.com/aberic/lilydb/engine/siam/utils"
 	"reflect"
@@ -45,7 +44,7 @@ import (
 // formID 表唯一ID
 //
 // delete 是否删除检索结果
-func NewSelector(selectorBytes []byte, indexes []*Index, databaseID, formID string, delete bool) (connector.Selector, error) {
+func NewSelector(selectorBytes []byte, indexes []*Index, databaseID, formID string, delete bool) (*Selector, error) {
 	selector := &Selector{}
 	if err := json.Unmarshal(selectorBytes, selector); nil != err {
 		return nil, err

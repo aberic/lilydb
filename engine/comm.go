@@ -38,7 +38,7 @@ var (
 	// ErrDataNotFound 自定义error信息
 	ErrDataNotFound = errors.New("database not found")
 	// ErrFormNotFound 自定义error信息
-	ErrFormNotFound = errors.New("form not found")
+	ErrFormNotFound = errors.New("form not found or type not support")
 	//// ErrFormExist 自定义error信息
 	//ErrFormExist = errors.New("form already exist")
 	//// ErrKeyExist 自定义error信息

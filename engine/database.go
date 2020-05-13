@@ -58,15 +58,15 @@ func (db *database) newForm(formID, formName, comment string, formType connector
 }
 
 func (db *database) insert(formID string, value interface{}) (uint64, error) {
-	if fm, exist := db.forms[formID]; exist {
+	if fm, exist := db.forms[formID]; exist && fm.FormType() == connector.FormTypeSiam {
 		return fm.Insert(value)
 	}
 	return 0, ErrFormNotFound
 }
 
 func (db *database) update(formID string, value interface{}) (uint64, error) {
-	if fm, exist := db.forms[formID]; exist {
-		return fm.Update(value)
+	if fm, exist := db.forms[formID]; exist && fm.FormType() == connector.FormTypeSiam {
+		return fm.Insert(value)
 	}
 	return 0, ErrFormNotFound
 }

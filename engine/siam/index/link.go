@@ -24,7 +24,8 @@
 
 package index
 
-type link struct {
+// Link 叶子节点下的链表对象接口
+type Link struct {
 	md516Key       string
 	seekStartIndex int64 // 索引最终存储在文件中的起始位置
 	seekStart      int64 // value最终存储在文件中的起始位置
@@ -41,28 +42,34 @@ type link struct {
 // seekLast value最终存储在文件中的持续长度
 //
 // version 当前索引数据版本号
-func (l *link) Fit(seekStartIndex int64, seekStart int64, seekLast, version int) {
+func (l *Link) Fit(seekStartIndex int64, seekStart int64, seekLast, version int) {
 	l.seekStartIndex = seekStartIndex
 	l.seekStart = seekStart
 	l.seekLast = seekLast
+	l.version = version
 }
 
-func (l *link) MD516Key() string {
+// MD516Key 获取md516Key
+func (l *Link) MD516Key() string {
 	return l.md516Key
 }
 
-func (l *link) SeekStartIndex() int64 {
+// SeekStartIndex 索引最终存储在文件中的起始位置
+func (l *Link) SeekStartIndex() int64 {
 	return l.seekStartIndex
 }
 
-func (l *link) SeekStart() int64 {
+// SeekStart value最终存储在文件中的起始位置
+func (l *Link) SeekStart() int64 {
 	return l.seekStart
 }
 
-func (l *link) SeekLast() int {
+// SeekLast value最终存储在文件中的持续长度
+func (l *Link) SeekLast() int {
 	return l.seekLast
 }
 
-func (l *link) Version() int {
+// Version 当前索引数据版本号
+func (l *Link) Version() int {
 	return l.version
 }

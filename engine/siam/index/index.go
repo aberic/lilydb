@@ -30,7 +30,6 @@ import (
 	"errors"
 	"github.com/aberic/gnomon"
 	"github.com/aberic/gnomon/log"
-	"github.com/aberic/lilydb/connector"
 	"github.com/aberic/lilydb/engine/siam/utils"
 	"io"
 	"os"
@@ -96,7 +95,7 @@ func (i *Index) KeyStructure() string {
 // value 存储对象
 //
 // update 本次是否执行更新操作
-func (i *Index) Put(md516Key string, hashKey uint64, version int) (link connector.Link, exist, versionGT bool) {
+func (i *Index) Put(md516Key string, hashKey uint64, version int) (link *Link, exist, versionGT bool) {
 	return i.node.put(md516Key, hashKey, hashKey, version)
 }
 
@@ -105,7 +104,7 @@ func (i *Index) Put(md516Key string, hashKey uint64, version int) (link connecto
 // key 真实key，必须string类型
 //
 // hashKey 索引key，可通过hash转换string生成
-func (i *Index) Get(md516Key string, hashKey uint64) connector.Link {
+func (i *Index) Get(md516Key string, hashKey uint64) *Link {
 	return i.node.get(md516Key, hashKey, hashKey)
 }
 

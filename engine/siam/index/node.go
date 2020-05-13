@@ -43,7 +43,7 @@ type node struct {
 	degreeIndex uint16 // 当前节点所在集合中的索引下标，该坐标不一定在数组中的正确位置，但一定是逻辑正确的
 	preNode     *node  // node 所属 trolley
 	nodes       []*node
-	links       []*link
+	links       []*Link
 	mu          sync.RWMutex
 }
 
@@ -58,7 +58,7 @@ type node struct {
 // version 当前索引数据版本号
 //
 // return exist 返回是否存在
-func (n *node) put(md516Key string, hashKey, flexibleKey uint64, version int) (link *link, exist, versionGT bool) {
+func (n *node) put(md516Key string, hashKey, flexibleKey uint64, version int) (link *Link, exist, versionGT bool) {
 	var (
 		nextDegree      uint16 // 下一节点所在当前节点下度的坐标
 		nextFlexibleKey uint64 // 下一级最左最小树所对应真实key
@@ -88,7 +88,7 @@ func (n *node) put(md516Key string, hashKey, flexibleKey uint64, version int) (l
 // hashKey 索引key，可通过hash转换string生成
 //
 // flexibleKey 下一级最左最小树所对应真实key
-func (n *node) get(md516Key string, hashKey, flexibleKey uint64) *link {
+func (n *node) get(md516Key string, hashKey, flexibleKey uint64) *Link {
 	var (
 		nextDegree      uint16 // 下一节点所在当前节点下度的坐标
 		nextFlexibleKey uint64 // 下一级最左最小树所对应真实key
@@ -148,7 +148,7 @@ func (n *node) createOrTakeLeaf(index uint16) *node {
 			level:       level,
 			degreeIndex: index,
 			preNode:     n,
-			links:       []*link{},
+			links:       []*Link{},
 		}
 		return n.appendNodal(leaf)
 	}
@@ -160,7 +160,7 @@ func (n *node) createOrTakeLeaf(index uint16) *node {
 // md516Key 索引md516Key
 //
 // version 当前索引数据版本号
-func (n *node) link(md516Key string, version int) (lk *link, exist, versionGT bool) {
+func (n *node) link(md516Key string, version int) (lk *Link, exist, versionGT bool) {
 	if pos, exist := n.existLink(md516Key); exist {
 		lk = n.links[pos]
 		if version > lk.version {
@@ -170,7 +170,7 @@ func (n *node) link(md516Key string, version int) (lk *link, exist, versionGT bo
 	}
 	defer n.mu.Unlock()
 	n.mu.Lock()
-	lk = &link{md516Key: md516Key, version: version}
+	lk = &Link{md516Key: md516Key, version: version}
 	n.links = append(n.links, lk)
 	return lk, false, true
 }
