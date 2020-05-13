@@ -28,6 +28,7 @@ import (
 	"fmt"
 	"github.com/aberic/gnomon"
 	"github.com/aberic/lilydb/connector"
+	"github.com/aberic/lilydb/engine/comm"
 	"github.com/aberic/lilydb/engine/siam/index"
 	"github.com/aberic/lilydb/engine/siam/storage"
 	"github.com/aberic/lilydb/engine/siam/utils"
@@ -326,3 +327,39 @@ func (f *Form) getCustomIndex(idx *index.Index, value interface{}) (key string, 
 		return
 	}
 }
+
+// Put 新增数据
+//
+// key 插入的key
+//
+// value 插入数据对象
+//
+// 返回 hashKey
+func (f *Form) Put(_ string, _ interface{}) (uint64, error) {
+	return 0, comm.ErrFormNotFoundOrSupport
+}
+
+// Set 新增或修改数据
+//
+// key 插入的key
+//
+// value 插入数据对象
+//
+// 返回 hashKey
+func (f *Form) Set(_ string, _ interface{}) (uint64, error) {
+	return 0, comm.ErrFormNotFoundOrSupport
+}
+
+// Get 获取数据
+//
+// key 指定的key
+//
+// 返回 获取的数据对象
+func (f *Form) Get(_ string) (interface{}, error) { return nil, comm.ErrFormNotFoundOrSupport }
+
+// Del 删除数据
+//
+// key 指定的key
+//
+// 返回 删除的数据对象
+func (f *Form) Del(_ string) (interface{}, error) { return nil, comm.ErrFormNotFoundOrSupport }

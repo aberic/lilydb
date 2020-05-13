@@ -26,6 +26,7 @@ package engine
 
 import (
 	"github.com/aberic/lilydb/connector"
+	"github.com/aberic/lilydb/engine/comm"
 	"github.com/aberic/lilydb/engine/siam"
 )
 
@@ -61,26 +62,26 @@ func (db *database) insert(formID string, value interface{}) (uint64, error) {
 	if fm, exist := db.forms[formID]; exist && fm.FormType() == connector.FormTypeSiam {
 		return fm.Insert(value)
 	}
-	return 0, ErrFormNotFound
+	return 0, comm.ErrFormNotFoundOrSupport
 }
 
 func (db *database) update(formID string, value interface{}) (uint64, error) {
 	if fm, exist := db.forms[formID]; exist && fm.FormType() == connector.FormTypeSiam {
 		return fm.Insert(value)
 	}
-	return 0, ErrFormNotFound
+	return 0, comm.ErrFormNotFoundOrSupport
 }
 
 func (db *database) query(formID string, selectorBytes []byte) (int32, []interface{}, error) {
 	if fm, exist := db.forms[formID]; exist {
 		return fm.Select(selectorBytes)
 	}
-	return 0, nil, ErrFormNotFound
+	return 0, nil, comm.ErrFormNotFoundOrSupport
 }
 
 func (db *database) delete(formID string, selectorBytes []byte) (int32, error) {
 	if fm, exist := db.forms[formID]; exist {
 		return fm.Delete(selectorBytes)
 	}
-	return 0, ErrFormNotFound
+	return 0, comm.ErrFormNotFoundOrSupport
 }

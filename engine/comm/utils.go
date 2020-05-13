@@ -22,14 +22,10 @@
  * SOFTWARE.
  */
 
-package engine
+package comm
 
 import (
 	"errors"
-	"github.com/aberic/gnomon"
-	"github.com/aberic/lilydb/config"
-	"os"
-	"path/filepath"
 )
 
 var (
@@ -37,8 +33,8 @@ var (
 	ErrDatabaseExist = errors.New("database already exist")
 	// ErrDataNotFound 自定义error信息
 	ErrDataNotFound = errors.New("database not found")
-	// ErrFormNotFound 自定义error信息
-	ErrFormNotFound = errors.New("form not found or type not support")
+	// ErrFormNotFoundOrSupport 自定义error信息
+	ErrFormNotFoundOrSupport = errors.New("form not found or type not support")
 	//// ErrFormExist 自定义error信息
 	//ErrFormExist = errors.New("form already exist")
 	//// ErrKeyExist 自定义error信息
@@ -48,12 +44,3 @@ var (
 	//// ErrKeyIsNil 自定义error信息
 	//ErrKeyIsNil = errors.New("put keyStructure can not be nil")
 )
-
-// mkDataDir 创建库存储目录
-func mkDataDir(dataName string) (err error) {
-	dataPath := filepath.Join(config.Obtain().DataDir, dataName)
-	if gnomon.FilePathExists(dataPath) {
-		return ErrDatabaseExist
-	}
-	return os.MkdirAll(dataPath, os.ModePerm)
-}

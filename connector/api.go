@@ -30,6 +30,8 @@ type FormType int
 const (
 	// FormTypeSiam 静态索引方法(static index access method)
 	FormTypeSiam FormType = iota
+	// FormTypeMSiam 内存静态索引存取方法(memory static index access method)
+	FormTypeMSiam
 )
 
 // Form 表接口
@@ -43,23 +45,45 @@ type Form interface {
 	FormType() FormType // FormType 获取表类型
 	// Insert 新增数据
 	//
-	// databaseID 数据库唯一ID
-	//
 	// value 插入数据对象
 	//
 	// 返回 hashKey
 	Insert(value interface{}) (uint64, error)
 	// Update 更新数据，如果存在数据，则更新，如不存在，则插入
 	//
-	// databaseID 数据库唯一ID
-	//
 	// value 插入数据对象
 	//
 	// 返回 hashKey
 	Update(value interface{}) (uint64, error)
-	// Select 根据条件检索
+	// Put 新增数据
 	//
-	// databaseID 数据库唯一ID
+	// key 插入的key
+	//
+	// value 插入数据对象
+	//
+	// 返回 hashKey
+	Put(ket string, value interface{}) (uint64, error)
+	// Set 新增或修改数据
+	//
+	// key 插入的key
+	//
+	// value 插入数据对象
+	//
+	// 返回 hashKey
+	Set(ket string, value interface{}) (uint64, error)
+	// Get 获取数据
+	//
+	// key 指定的key
+	//
+	// 返回 获取的数据对象
+	Get(ket string) (interface{}, error)
+	// Del 删除数据
+	//
+	// key 指定的key
+	//
+	// 返回 删除的数据对象
+	Del(ket string) (interface{}, error)
+	// Select 根据条件检索
 	//
 	// selectorBytes 选择器字节数组，自定义转换策略
 	//
@@ -70,8 +94,6 @@ type Form interface {
 	// return err 检索错误信息，如果有
 	Select(selectorBytes []byte) (count int32, values []interface{}, err error)
 	// Delete 根据条件删除
-	//
-	// databaseID 数据库唯一ID
 	//
 	// selectorBytes 选择器字节数组，自定义转换策略
 	//

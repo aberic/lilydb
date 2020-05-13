@@ -25,7 +25,12 @@
 package engine
 
 import (
+	"github.com/aberic/gnomon"
+	"github.com/aberic/lilydb/config"
 	"github.com/aberic/lilydb/connector"
+	"github.com/aberic/lilydb/engine/comm"
+	"os"
+	"path/filepath"
 	"sync"
 )
 
@@ -91,7 +96,7 @@ func (e *Engine) NewForm(databaseID, formID, formName, comment string, formType 
 		db.newForm(formID, formName, comment, formType)
 		return nil
 	}
-	return ErrDataNotFound
+	return comm.ErrDataNotFound
 }
 
 // Insert 新增数据
@@ -107,7 +112,7 @@ func (e *Engine) Insert(databaseID, formID string, value interface{}) (uint64, e
 	if db, exist := e.databases[databaseID]; exist {
 		return db.insert(formID, value)
 	}
-	return 0, ErrDataNotFound
+	return 0, comm.ErrDataNotFound
 }
 
 // Update 更新数据，如果存在数据，则更新，如不存在，则插入
@@ -123,7 +128,7 @@ func (e *Engine) Update(databaseID, formID string, value interface{}) (uint64, e
 	if db, exist := e.databases[databaseID]; exist {
 		return db.update(formID, value)
 	}
-	return 0, ErrDataNotFound
+	return 0, comm.ErrDataNotFound
 }
 
 // Select 根据条件检索
@@ -143,7 +148,7 @@ func (e *Engine) Select(databaseID, formID string, selectorBytes []byte) (count 
 	if db, exist := e.databases[databaseID]; exist {
 		return db.query(formID, selectorBytes)
 	}
-	return 0, nil, ErrDataNotFound
+	return 0, nil, comm.ErrDataNotFound
 }
 
 // Delete 根据条件删除
@@ -161,5 +166,14 @@ func (e *Engine) Delete(databaseID, formID string, selectorBytes []byte) (count 
 	if db, exist := e.databases[databaseID]; exist {
 		return db.delete(formID, selectorBytes)
 	}
-	return 0, ErrDataNotFound
+	return 0, comm.ErrDataNotFound
+}
+
+// mkDataDir 创建库存储目录
+func mkDataDir(dataName string) (err error) {
+	dataPath := filepath.Join(config.Obtain().DataDir, dataName)
+	if gnomon.FilePathExists(dataPath) {
+		return comm.ErrDatabaseExist
+	}
+	return os.MkdirAll(dataPath, os.ModePerm)
 }
