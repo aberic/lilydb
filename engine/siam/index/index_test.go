@@ -24,7 +24,10 @@
 
 package index
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 func newIndex(databaseID, formID string) *Index {
 	return NewIndex(databaseID, formID, "indexID", "indexID", true)
@@ -56,6 +59,10 @@ func TestLink_SeekStart(t *testing.T) {
 
 func TestLink_SeekLast(t *testing.T) {
 	t.Log(linkFit().SeekLast())
+}
+
+func TestLink_Version(t *testing.T) {
+	t.Log(linkFit().Version())
 }
 
 func TestNewIndex(t *testing.T) {
@@ -134,6 +141,22 @@ var selectorJSONString = `{
 
 var selectorErrorJSONString = `error`
 
+var selector = &Selector{
+	Conditions: []*condition{
+		{
+			Param: "Age",
+			Cond:  "gt",
+			Value: 0,
+		},
+	},
+	Skip: 1,
+	Sort: &rank{
+		Param: "Age",
+		ASC:   false,
+	},
+	Limit: 3,
+}
+
 func TestNewSelector(t *testing.T) {
 	var indexes = []*Index{newIndex("database", "form")}
 	selector, err := NewSelector([]byte(selectorJSONString), indexes, "database", "form", false)
@@ -161,6 +184,193 @@ func TestSelector_Run(t *testing.T) {
 	selector, err := NewSelector([]byte(selectorJSONString), indexes, "database", "form", false)
 	if nil != err {
 		t.Error(err)
+	}
+	count, values := selector.Run()
+	t.Log(count, values)
+}
+
+func TestSelector_RunStructJSONBytes(t *testing.T) {
+	var (
+		idx     = newIndex("database", "form")
+		indexes = []*Index{idx}
+	)
+	if autoID, err := idx.Recover(); nil != err {
+		t.Error(err)
+	} else {
+		t.Log(*autoID)
+	}
+	data, err := json.Marshal(&selector)
+	if nil != err {
+		t.Error(err)
+	}
+	selector, err := NewSelector(data, indexes, "database", "form", false)
+	if nil != err {
+		t.Error(err)
+	}
+	count, values := selector.Run()
+	t.Log(count, values)
+}
+
+func TestSelector_RunStruct(t *testing.T) {
+	var (
+		idx     = newIndex("database", "form")
+		indexes = []*Index{idx}
+	)
+	if autoID, err := idx.Recover(); nil != err {
+		t.Error(err)
+	} else {
+		t.Log(*autoID)
+	}
+	var selector = &Selector{
+		indexes: indexes,
+		Conditions: []*condition{
+			{
+				Param: "Age",
+				Cond:  "gt",
+				Value: 3,
+			},
+		},
+		Skip: 1,
+		Sort: &rank{
+			Param: "Age",
+			ASC:   false,
+		},
+		Limit:      3,
+		databaseID: "database",
+		formID:     "form",
+		delete:     false,
+	}
+	count, values := selector.Run()
+	t.Log(count, values)
+}
+
+func TestSelector_RunStructWithKeyStructure(t *testing.T) {
+	var (
+		idx     = NewIndex("database", "form", "indexID", "Age", true)
+		indexes = []*Index{idx}
+	)
+	if autoID, err := idx.Recover(); nil != err {
+		t.Error(err)
+	} else {
+		t.Log(*autoID)
+	}
+	var selector = &Selector{
+		indexes: indexes,
+		Conditions: []*condition{
+			{
+				Param: "Age",
+				Cond:  "gt",
+				Value: 3,
+			},
+		},
+		Skip: 1,
+		Sort: &rank{
+			Param: "Age",
+			ASC:   false,
+		},
+		Limit:      3,
+		databaseID: "database",
+		formID:     "form",
+		delete:     false,
+	}
+	count, values := selector.Run()
+	t.Log(count, values)
+}
+
+func TestSelector_RunStructWithKeyStructureAsc(t *testing.T) {
+	var (
+		idx     = NewIndex("database", "form", "indexID", "Age", true)
+		indexes = []*Index{idx}
+	)
+	if autoID, err := idx.Recover(); nil != err {
+		t.Error(err)
+	} else {
+		t.Log(*autoID)
+	}
+	var selector = &Selector{
+		indexes: indexes,
+		Conditions: []*condition{
+			{
+				Param: "Age",
+				Cond:  "gt",
+				Value: 3,
+			},
+		},
+		Skip: 1,
+		Sort: &rank{
+			Param: "Age",
+			ASC:   true,
+		},
+		Limit:      3,
+		databaseID: "database",
+		formID:     "form",
+		delete:     false,
+	}
+	count, values := selector.Run()
+	t.Log(count, values)
+}
+
+func TestSelector_RunStructWithKeyStructureDelete(t *testing.T) {
+	var (
+		idx     = NewIndex("database", "form", "indexID", "Age", true)
+		indexes = []*Index{idx}
+	)
+	if autoID, err := idx.Recover(); nil != err {
+		t.Error(err)
+	} else {
+		t.Log(*autoID)
+	}
+	var selector = &Selector{
+		indexes: indexes,
+		Conditions: []*condition{
+			{
+				Param: "Age",
+				Cond:  "gt",
+				Value: 3,
+			},
+		},
+		Skip: 1,
+		Sort: &rank{
+			Param: "Age",
+			ASC:   false,
+		},
+		Limit:      3,
+		databaseID: "database",
+		formID:     "form",
+		delete:     true,
+	}
+	count, values := selector.Run()
+	t.Log(count, values)
+}
+
+func TestSelector_RunStructWithKeyStructureAscDelete(t *testing.T) {
+	var (
+		idx     = NewIndex("database", "form", "indexID", "Age", true)
+		indexes = []*Index{idx}
+	)
+	if autoID, err := idx.Recover(); nil != err {
+		t.Error(err)
+	} else {
+		t.Log(*autoID)
+	}
+	var selector = &Selector{
+		indexes: indexes,
+		Conditions: []*condition{
+			{
+				Param: "Age",
+				Cond:  "gt",
+				Value: 3,
+			},
+		},
+		Skip: 1,
+		Sort: &rank{
+			Param: "Age",
+			ASC:   true,
+		},
+		Limit:      3,
+		databaseID: "database",
+		formID:     "form",
+		delete:     true,
 	}
 	count, values := selector.Run()
 	t.Log(count, values)

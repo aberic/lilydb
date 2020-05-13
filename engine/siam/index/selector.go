@@ -79,18 +79,12 @@ type Selector struct {
 //
 // return err 检索错误信息，如果有
 func (s *Selector) Run() (int32, []interface{}) {
-	var (
-		idx       *Index
-		leftQuery bool
-		nc        *nodeCondition
-		pcs       map[string]*paramCondition
-	)
-	idx, leftQuery, nc, pcs = s.index()
+	idx, asc, nc, pcs := s.index() // 根据检索条件获取使用索引对象等信息
 	log.Debug("query", log.Field("index", idx.KeyStructure()))
-	if s.Limit == 0 {
+	if s.Limit == 0 { // 默认限制查询1000条数据
 		s.Limit = 1000
 	}
-	if leftQuery {
+	if asc { // 是否顺序查询
 		return s.leftQueryIndex(idx, nc, pcs)
 	}
 	return s.rightQueryIndex(idx, nc, pcs)
@@ -100,12 +94,12 @@ func (s *Selector) Run() (int32, []interface{}) {
 //
 // index 已获取索引对象
 //
-// leftQuery 是否顺序查询
+// asc 是否顺序查询
 //
 // cond 条件对象
-func (s *Selector) index() (index *Index, leftQuery bool, nc *nodeCondition, pcs map[string]*paramCondition) {
+func (s *Selector) index() (index *Index, asc bool, nc *nodeCondition, pcs map[string]*paramCondition) {
 	// 优先尝试采用条件作为索引，缩小索引范围以提高检索效率
-	index, leftQuery, nc, pcs = s.indexCondition()
+	index, asc, nc, pcs = s.indexCondition()
 	if index != nil { // 如果存在条件查询，则优先条件查询
 		return
 	}
@@ -119,19 +113,19 @@ func (s *Selector) index() (index *Index, leftQuery bool, nc *nodeCondition, pcs
 	return
 }
 
-// getIndexCondition 优先尝试采用条件作为索引，缩小索引范围以提高检索效率
+// indexCondition 优先尝试采用条件作为索引，缩小索引范围以提高检索效率
 //
 // 优先匹配有多个相同Param参数的条件，如果相同数量一样，则按照先后顺序选择最先匹配的
-func (s *Selector) indexCondition() (index *Index, leftQuery bool, nc *nodeCondition, pcs map[string]*paramCondition) {
+func (s *Selector) indexCondition() (index *Index, asc bool, nc *nodeCondition, pcs map[string]*paramCondition) {
 	pcs = make(map[string]*paramCondition)
 	ncs := make(map[string]*nodeCondition)
-	leftQuery = true
+	asc = true
 	for _, condition := range s.Conditions { // 遍历检索条件
-		for _, idx := range s.indexes {
-			if condition.Param == idx.KeyStructure() { // 匹配条件是否存在已有索引
+		for _, idx := range s.indexes { // 遍历检索索引
+			if condition.Param == idx.KeyStructure() { // 匹配条件是否存在已有索引，如没有，进入下一轮循环
 				if nil != s.Sort && s.Sort.Param == idx.KeyStructure() { // 如果有，则继续判断该索引是否存在排序需求
 					index = idx
-					leftQuery = s.Sort.ASC
+					asc = s.Sort.ASC
 					if ncs[condition.Param] == nil {
 						ncs[condition.Param] = &nodeCondition{nss: []*nodeSelector{}}
 					}
