@@ -220,17 +220,19 @@ func (s *Selector) conditionNode(nc *nodeCondition, cond *condition) {
 }
 
 const (
-	paramInt64 = iota
+	paramInt64 paramType = iota
 	paramUint64
 	paramFloat64
 	paramString
 	paramBool
 )
 
+type paramType int
+
 // formatParam 梳理param的类型及值
 //
 // 类型：int=0;int64=1;uint64=2;string=3;bool=4
-func (s *Selector) formatParam(paramValue interface{}) (paramType int, value interface{}, support bool) {
+func (s *Selector) formatParam(paramValue interface{}) (paramType paramType, value interface{}, support bool) {
 	switch paramValue := paramValue.(type) {
 	default:
 		return -1, nil, false
@@ -559,7 +561,7 @@ func (s *Selector) isConditionNoIndexLeaf(ns *nodeCondition, pcs map[string]*par
 }
 
 // conditionValue 判断当前条件是否满足
-func (s *Selector) conditionValue(cond string, params []string, paramType int, paramValue, objValue interface{}) bool {
+func (s *Selector) conditionValue(cond string, params []string, paramType paramType, paramValue, objValue interface{}) bool {
 	var value interface{}
 	if value = s.valueFromParams(params, objValue); nil == value {
 		return false
@@ -568,25 +570,13 @@ func (s *Selector) conditionValue(cond string, params []string, paramType int, p
 	default:
 		return false
 	case int, int8, int16, int32, int64:
-		if paramType != paramInt64 {
-			return false
-		}
-		return conditionValueInt64(cond, paramValue.(int64), value.(int64))
+		return conditionValueInt64(cond, paramType, paramValue, value.(int64))
 	case uint8, uint16, uint32, uint, uint64, uintptr:
-		if paramType != paramUint64 {
-			return false
-		}
-		return conditionValueUint64(cond, paramValue.(uint64), value.(uint64))
+		return conditionValueUint64(cond, paramType, paramValue, value.(uint64))
 	case float32, float64:
-		if paramType != paramFloat64 {
-			return false
-		}
-		return conditionValueFloat64(cond, paramValue.(float64), value.(float64))
+		return conditionValueFloat64(cond, paramType, paramValue, value.(float64))
 	case string:
-		if paramType != paramString {
-			return false
-		}
-		return conditionValueString(cond, paramValue.(string), value)
+		return conditionValueString(cond, paramType, paramValue, value)
 	case bool:
 		if paramType != paramBool {
 			return false

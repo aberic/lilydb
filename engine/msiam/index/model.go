@@ -79,6 +79,6 @@ type nodeSelector struct {
 
 // paramCondition 参数条件结构
 type paramCondition struct {
-	paramType  int         // paramType 参数类型
+	paramType  paramType   // paramType 参数类型
 	paramValue interface{} // paramValue 参数对应指定类型的值
 }
