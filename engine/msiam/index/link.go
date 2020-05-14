@@ -22,31 +22,48 @@
  * SOFTWARE.
  */
 
-package comm
+package index
 
-import (
-	"errors"
-)
+// Link 叶子节点下的链表对象接口
+type Link struct {
+	key      string      // 存入key
+	md516Key string      // md516后的key
+	value    interface{} // 值
+	version  int         // 当前索引数据版本号
+}
 
-var (
-	// ErrDatabaseExist 自定义error信息
-	ErrDatabaseExist = errors.New("database already exist")
-	// ErrDataNotFound 自定义error信息
-	ErrDataNotFound = errors.New("database not found")
-	// ErrFormNotFoundOrSupport 自定义error信息
-	ErrFormNotFoundOrSupport = errors.New("form not found or type not support")
-	// ErrKeyNotFound 自定义error信息
-	ErrKeyNotFound = errors.New("key not found")
-	// ErrLinkNotFound 自定义error信息
-	ErrLinkNotFound = errors.New("link not found")
-	//// ErrIndexFileNotFound 自定义error信息
-	//ErrIndexFileNotFound = errors.New("index file not found")
-	//// ErrFormExist 自定义error信息
-	//ErrFormExist = errors.New("form already exist")
-	//// ErrKeyExist 自定义error信息
-	//ErrKeyExist = errors.New("key already exist")
-	//// ErrIndexExist 自定义error信息
-	//ErrIndexExist = errors.New("index already exist")
-	//// ErrKeyIsNil 自定义error信息
-	//ErrKeyIsNil = errors.New("put keyStructure can not be nil")
-)
+// Fit 填充数据
+//
+// key 存入key
+//
+// md516Key md516后的key
+//
+// value 值
+//
+// version 当前索引数据版本号
+func (l *Link) Fit(key, md516Key string, value interface{}, version int) {
+	l.key = key
+	l.md516Key = md516Key
+	l.value = value
+	l.version = version
+}
+
+// Key 存入key
+func (l *Link) Key() string {
+	return l.key
+}
+
+// MD516Key md516后的key
+func (l *Link) MD516Key() string {
+	return l.md516Key
+}
+
+// Value 值
+func (l *Link) Value() interface{} {
+	return l.value
+}
+
+// Version 当前索引数据版本号
+func (l *Link) Version() int {
+	return l.version
+}

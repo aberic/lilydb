@@ -26,6 +26,7 @@ package utils
 
 import (
 	"github.com/aberic/gnomon"
+	"github.com/aberic/lilydb/engine/comm"
 	"reflect"
 	"strconv"
 )
@@ -59,7 +60,7 @@ func Type2index(value interface{}) (key string, hashKey uint64, support bool) {
 		key = strconv.FormatInt(i64, 10)
 		hashKey = uint64(i64 + 9223372036854775807 + 1)
 	case string:
-		hashKey = Hash(value)
+		hashKey = comm.Hash(value)
 	case bool:
 		if value {
 			key = "true"
@@ -95,7 +96,7 @@ func ValueType2index(value *reflect.Value) (key string, hashKey uint64, support 
 		hashKey = uint64(i64 + 9223372036854775807 + 1)
 	case reflect.String:
 		key = value.String()
-		hashKey = Hash(key)
+		hashKey = comm.Hash(key)
 	case reflect.Bool:
 		if value.Bool() {
 			key = value.String()
@@ -126,7 +127,7 @@ func Value2hashKey(value *reflect.Value) (hashKey uint64, support bool) {
 	case reflect.Float32, reflect.Float64:
 		hashKey = uint64(gnomon.ScaleFloat64toInt64(value.Float(), 4) + 9223372036854775807 + 1)
 	case reflect.String:
-		hashKey = Hash(value.String())
+		hashKey = comm.Hash(value.String())
 	case reflect.Bool:
 		if value.Bool() {
 			hashKey = 1

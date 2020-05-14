@@ -25,12 +25,13 @@
 package utils
 
 import (
+	"github.com/aberic/lilydb/engine/comm"
 	"reflect"
 	"testing"
 )
 
 func TestHash(t *testing.T) {
-	t.Log(Hash("test"))
+	t.Log(comm.Hash("test"))
 }
 
 func TestPathFormFile(t *testing.T) {

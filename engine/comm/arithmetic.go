@@ -24,29 +24,9 @@
 
 package comm
 
-import (
-	"errors"
-)
+import "hash/crc32"
 
-var (
-	// ErrDatabaseExist 自定义error信息
-	ErrDatabaseExist = errors.New("database already exist")
-	// ErrDataNotFound 自定义error信息
-	ErrDataNotFound = errors.New("database not found")
-	// ErrFormNotFoundOrSupport 自定义error信息
-	ErrFormNotFoundOrSupport = errors.New("form not found or type not support")
-	// ErrKeyNotFound 自定义error信息
-	ErrKeyNotFound = errors.New("key not found")
-	// ErrLinkNotFound 自定义error信息
-	ErrLinkNotFound = errors.New("link not found")
-	//// ErrIndexFileNotFound 自定义error信息
-	//ErrIndexFileNotFound = errors.New("index file not found")
-	//// ErrFormExist 自定义error信息
-	//ErrFormExist = errors.New("form already exist")
-	//// ErrKeyExist 自定义error信息
-	//ErrKeyExist = errors.New("key already exist")
-	//// ErrIndexExist 自定义error信息
-	//ErrIndexExist = errors.New("index already exist")
-	//// ErrKeyIsNil 自定义error信息
-	//ErrKeyIsNil = errors.New("put keyStructure can not be nil")
-)
+// Hash String hashes a string to a unique hashcode.
+func Hash(key string) uint64 {
+	return uint64(crc32.ChecksumIEEE([]byte(key)))
+}

@@ -27,6 +27,7 @@ package engine
 import (
 	"github.com/aberic/lilydb/connector"
 	"github.com/aberic/lilydb/engine/comm"
+	"github.com/aberic/lilydb/engine/msiam"
 	"github.com/aberic/lilydb/engine/siam"
 )
 
@@ -55,7 +56,81 @@ func (db *database) newForm(formID, formName, comment string, formType connector
 		panic("form type error")
 	case connector.FormTypeSiam:
 		db.forms[formID] = siam.NewForm(db.id, formID, formName, comment)
+	case connector.FormTypeMSiam:
+		db.forms[formID] = msiam.NewForm(db.id, formID, formName, comment)
 	}
+}
+
+// Put 新增数据
+//
+// key 插入的key
+//
+// value 插入数据对象
+//
+// 返回 hashKey
+func (db *database) put(formID, key string, value interface{}) (uint64, error) {
+	if fm, exist := db.forms[formID]; exist {
+		switch fm.FormType() {
+		default:
+			return 0, comm.ErrFormNotFoundOrSupport
+		case connector.FormTypeMSiam:
+			return fm.Put(key, value)
+		}
+	}
+	return 0, comm.ErrFormNotFoundOrSupport
+}
+
+// Set 新增或修改数据
+//
+// key 插入的key
+//
+// value 插入数据对象
+//
+// 返回 hashKey
+func (db *database) set(formID, key string, value interface{}) (uint64, error) {
+	if fm, exist := db.forms[formID]; exist {
+		switch fm.FormType() {
+		default:
+			return 0, comm.ErrFormNotFoundOrSupport
+		case connector.FormTypeMSiam:
+			return fm.Set(key, value)
+		}
+	}
+	return 0, comm.ErrFormNotFoundOrSupport
+}
+
+// Get 获取数据
+//
+// key 指定的key
+//
+// 返回 获取的数据对象
+func (db *database) get(formID, key string) (interface{}, error) {
+	if fm, exist := db.forms[formID]; exist {
+		switch fm.FormType() {
+		default:
+			return 0, comm.ErrFormNotFoundOrSupport
+		case connector.FormTypeMSiam:
+			return fm.Get(key)
+		}
+	}
+	return 0, comm.ErrFormNotFoundOrSupport
+}
+
+// Del 删除数据
+//
+// key 指定的key
+//
+// 返回 删除的数据对象
+func (db *database) del(formID, key string) (interface{}, error) {
+	if fm, exist := db.forms[formID]; exist {
+		switch fm.FormType() {
+		default:
+			return 0, comm.ErrFormNotFoundOrSupport
+		case connector.FormTypeMSiam:
+			return fm.Del(key)
+		}
+	}
+	return 0, comm.ErrFormNotFoundOrSupport
 }
 
 func (db *database) insert(formID string, value interface{}) (uint64, error) {

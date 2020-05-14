@@ -22,11 +22,5 @@
  * SOFTWARE.
  */
 
-package utils
-
-import "hash/crc32"
-
-// Hash String hashes a string to a unique hashcode.
-func Hash(key string) uint64 {
-	return uint64(crc32.ChecksumIEEE([]byte(key)))
-}
+// Package msiam 内存静态索引存取方法(memory static index access method)
+package msiam

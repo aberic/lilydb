@@ -99,6 +99,74 @@ func (e *Engine) NewForm(databaseID, formID, formName, comment string, formType 
 	return comm.ErrDataNotFound
 }
 
+// Put 新增数据
+//
+// databaseID 数据库唯一ID
+//
+// formID 表唯一ID
+//
+// key 插入的key
+//
+// value 插入数据对象
+//
+// 返回 hashKey
+func (e *Engine) Put(databaseID, formID, key string, value interface{}) (uint64, error) {
+	if db, exist := e.databases[databaseID]; exist {
+		return db.put(formID, key, value)
+	}
+	return 0, comm.ErrDataNotFound
+}
+
+// Set 新增或修改数据
+//
+// databaseID 数据库唯一ID
+//
+// formID 表唯一ID
+//
+// key 插入的key
+//
+// value 插入数据对象
+//
+// 返回 hashKey
+func (e *Engine) Set(databaseID, formID, key string, value interface{}) (uint64, error) {
+	if db, exist := e.databases[databaseID]; exist {
+		return db.set(formID, key, value)
+	}
+	return 0, comm.ErrDataNotFound
+}
+
+// Get 获取数据
+//
+// databaseID 数据库唯一ID
+//
+// formID 表唯一ID
+//
+// key 指定的key
+//
+// 返回 获取的数据对象
+func (e *Engine) Get(databaseID, formID, key string) (interface{}, error) {
+	if db, exist := e.databases[databaseID]; exist {
+		return db.get(formID, key)
+	}
+	return 0, comm.ErrDataNotFound
+}
+
+// Del 删除数据
+//
+// databaseID 数据库唯一ID
+//
+// formID 表唯一ID
+//
+// key 指定的key
+//
+// 返回 删除的数据对象
+func (e *Engine) Del(databaseID, formID, key string) (interface{}, error) {
+	if db, exist := e.databases[databaseID]; exist {
+		return db.del(formID, key)
+	}
+	return 0, comm.ErrDataNotFound
+}
+
 // Insert 新增数据
 //
 // databaseID 数据库唯一ID
