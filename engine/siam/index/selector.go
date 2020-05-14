@@ -570,11 +570,11 @@ func (s *Selector) conditionValue(cond string, params []string, paramType paramT
 	default:
 		return false
 	case int, int8, int16, int32, int64:
-		return conditionValueInt64(cond, paramType, paramValue, value.(int64))
+		return conditionValueInt64(cond, paramType, paramValue, value)
 	case uint8, uint16, uint32, uint, uint64, uintptr:
-		return conditionValueUint64(cond, paramType, paramValue, value.(uint64))
+		return conditionValueUint64(cond, paramType, paramValue, value)
 	case float32, float64:
-		return conditionValueFloat64(cond, paramType, paramValue, value.(float64))
+		return conditionValueFloat64(cond, paramType, paramValue, value)
 	case string:
 		return conditionValueString(cond, paramType, paramValue, value)
 	case bool:

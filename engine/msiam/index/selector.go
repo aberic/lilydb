@@ -567,11 +567,11 @@ func (s *Selector) conditionValue(cond string, params []string, paramType paramT
 	default:
 		return false
 	case int, int8, int16, int32, int64:
-		return conditionValueInt64(cond, paramType, paramValue, value.(int64))
+		return conditionValueInt64(cond, paramType, paramValue, value)
 	case uint8, uint16, uint32, uint, uint64, uintptr:
-		return conditionValueUint64(cond, paramType, paramValue, value.(uint64))
+		return conditionValueUint64(cond, paramType, paramValue, value)
 	case float32, float64:
-		return conditionValueFloat64(cond, paramType, paramValue, value.(float64))
+		return conditionValueFloat64(cond, paramType, paramValue, value)
 	case string:
 		return conditionValueString(cond, paramType, paramValue, value)
 	case bool:
@@ -585,10 +585,25 @@ func (s *Selector) conditionValue(cond string, params []string, paramType paramT
 // getValueFromParams 根据索引描述获取当前value
 func (s *Selector) valueFromParams(params []string, value interface{}) interface{} {
 	reflectObj := reflect.ValueOf(value) // 反射对象，通过reflectObj获取存储在里面的值，还可以去改变值
-	if reflectObj.Kind() == reflect.Map {
+	valueType := reflectObj.Kind()
+	if valueType == reflect.Ptr {
+		if reflectObj.IsNil() {
+			log.Debug("valueFromParams", log.Field("kind", valueType), log.Field("support", false))
+			return nil
+		}
+		reflectObj = reflectObj.Elem()
+		valueType = reflectObj.Kind()
+	} else {
+		reflectObj = reflectObj.Elem()
+	}
+	switch valueType {
+	default:
+		log.Debug("valueFromParams", log.Field("kind", reflectObj.Kind()), log.Field("support", false))
+		return nil
+	case reflect.Map:
+		var valueResult interface{}
 		interMap := value.(map[string]interface{})
 		lenParams := len(params)
-		var valueResult interface{}
 		for i, param := range params {
 			if i == lenParams-1 {
 				valueResult = interMap[param]
@@ -597,9 +612,18 @@ func (s *Selector) valueFromParams(params []string, value interface{}) interface
 			interMap = interMap[param].(map[string]interface{})
 		}
 		return valueResult
+	case reflect.Struct:
+		var valueResult interface{}
+		lenParams := len(params)
+		for i, param := range params {
+			if i == lenParams-1 {
+				valueResult = reflectObj.FieldByName(param).Interface()
+				break
+			}
+			reflectObj = reflectObj.FieldByName(param)
+		}
+		return valueResult
 	}
-	log.Debug("getValueFromParams", log.Field("kind", reflectObj.Kind()), log.Field("support", false))
-	return nil
 }
 
 // shellSort 希尔排序

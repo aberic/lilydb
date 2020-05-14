@@ -62,10 +62,25 @@ func levelDistance(level uint8) uint64 {
 }
 
 // conditionValueInt64 判断当前条件是否满足
-func conditionValueInt64(cond string, paramType paramType, paramValue interface{}, value int64) bool {
+func conditionValueInt64(cond string, paramType paramType, paramValue interface{}, value interface{}) bool {
 	var (
+		valueInt64      int64
 		paramInt64Value int64
 	)
+	switch value := value.(type) {
+	default:
+		return false
+	case int:
+		valueInt64 = int64(value)
+	case int8:
+		valueInt64 = int64(value)
+	case int16:
+		valueInt64 = int64(value)
+	case int32:
+		valueInt64 = int64(value)
+	case int64:
+		valueInt64 = value
+	}
 	if paramType != paramInt64 {
 		var success bool
 		paramInt64Value, success = param2Int64(paramType, paramValue)
@@ -79,19 +94,36 @@ func conditionValueInt64(cond string, paramType paramType, paramValue interface{
 	default:
 		return false
 	case "gt":
-		return value > paramInt64Value
+		return valueInt64 > paramInt64Value
 	case "lt":
-		return value < paramInt64Value
+		return valueInt64 < paramInt64Value
 	case "eq":
-		return value == paramInt64Value
+		return valueInt64 == paramInt64Value
 	case "dif":
-		return value != paramInt64Value
+		return valueInt64 != paramInt64Value
 	}
 }
 
 // conditionValueUint64 判断当前条件是否满足
-func conditionValueUint64(cond string, paramType paramType, paramValue interface{}, value uint64) bool {
-	var paramUint64Value uint64
+func conditionValueUint64(cond string, paramType paramType, paramValue interface{}, value interface{}) bool {
+	var (
+		valueUint64      uint64
+		paramUint64Value uint64
+	)
+	switch value := value.(type) {
+	default:
+		return false
+	case uint:
+		valueUint64 = uint64(value)
+	case uint8:
+		valueUint64 = uint64(value)
+	case uint16:
+		valueUint64 = uint64(value)
+	case uint32:
+		valueUint64 = uint64(value)
+	case uint64:
+		valueUint64 = value
+	}
 	if paramType != paramUint64 {
 		var success bool
 		paramUint64Value, success = param2UInt64(paramType, paramValue)
@@ -105,9 +137,9 @@ func conditionValueUint64(cond string, paramType paramType, paramValue interface
 	default:
 		return false
 	case "gt":
-		return value > paramUint64Value
+		return valueUint64 > paramUint64Value
 	case "lt":
-		return value < paramUint64Value
+		return valueUint64 < paramUint64Value
 	case "eq":
 		return value == paramUint64Value
 	case "dif":
@@ -116,8 +148,19 @@ func conditionValueUint64(cond string, paramType paramType, paramValue interface
 }
 
 // conditionValueFloat64 判断当前条件是否满足
-func conditionValueFloat64(cond string, paramType paramType, paramValue interface{}, value float64) bool {
-	var paramFloat64Value float64
+func conditionValueFloat64(cond string, paramType paramType, paramValue interface{}, value interface{}) bool {
+	var (
+		valueFloat64      float64
+		paramFloat64Value float64
+	)
+	switch value := value.(type) {
+	default:
+		return false
+	case float32:
+		valueFloat64 = float64(value)
+	case float64:
+		valueFloat64 = value
+	}
 	if paramType != paramFloat64 {
 		var success bool
 		paramFloat64Value, success = param2Float64(paramType, paramValue)
@@ -131,13 +174,13 @@ func conditionValueFloat64(cond string, paramType paramType, paramValue interfac
 	default:
 		return false
 	case "gt":
-		return value > paramFloat64Value
+		return valueFloat64 > paramFloat64Value
 	case "lt":
-		return value < paramFloat64Value
+		return valueFloat64 < paramFloat64Value
 	case "eq":
-		return value == paramFloat64Value
+		return valueFloat64 == paramFloat64Value
 	case "dif":
-		return value != paramFloat64Value
+		return valueFloat64 != paramFloat64Value
 	}
 }
 

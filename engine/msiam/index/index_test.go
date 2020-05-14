@@ -25,6 +25,8 @@
 package index
 
 import (
+	"github.com/aberic/gnomon"
+	"strconv"
 	"testing"
 )
 
@@ -144,4 +146,29 @@ func TestNewSelectorFail(t *testing.T) {
 	selector, err := NewSelector([]byte(selectorErrorJSONString), indexes, "database", "form", false)
 	t.Log(selector)
 	t.Log(err)
+}
+
+func TestSelector_Run(t *testing.T) {
+	var (
+		idx     = newIndex("database", "form")
+		indexes = []*Index{idx}
+	)
+	type Value struct {
+		Name string
+		Age  int
+	}
+	var i uint64
+	for i = 0; i < 10; i++ {
+		v := &Value{Name: "name", Age: int(i)}
+		_, _, _ = idx.Put("key", gnomon.HashMD516(strconv.Itoa(int(i))), i, v, 0)
+	}
+	selector, err := NewSelector([]byte(selectorJSONString), indexes, "database", "form", false)
+	if nil != err {
+		t.Error(err)
+	}
+	count, values := selector.Run()
+	t.Log(count, values)
+	for _, v := range values {
+		t.Log(v)
+	}
 }
