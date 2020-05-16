@@ -24,10 +24,12 @@
 
 package connector
 
+// ResultSuccess 成功返回对象
 func ResultSuccess(value interface{}) *Result {
 	return &Result{code: Success, value: value}
 }
 
+// ResultFail 失败返回错误
 func ResultFail(error error) *Result {
 	return &Result{code: Fail, error: error}
 }
