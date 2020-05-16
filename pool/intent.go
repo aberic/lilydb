@@ -52,8 +52,7 @@ type IntentNewForm struct {
 	formType   connector.FormType
 }
 
-// Run 执行
-func (i *IntentNewForm) Run(engine *engine.Engine, handler Handler) {
+func (i *IntentNewForm) run(engine *engine.Engine, handler Handler) {
 	err := engine.NewForm(i.databaseID, i.formID, i.formName, i.comment, i.formType)
 	if nil != err {
 		handler(resultFail(err))
