@@ -53,9 +53,9 @@ type IntentNewDatabase struct {
 func (i *IntentNewDatabase) run(engine *engine.Engine, handler Handler) {
 	err := engine.NewDatabase(i.databaseID, i.databaseName, i.comment)
 	if nil != err {
-		handler(resultFail(err))
+		handler(connector.ResultFail(err))
 	}
-	handler(resultSuccess(nil))
+	handler(connector.ResultSuccess(nil))
 }
 
 // IntentNewForm 新建表意图
@@ -70,9 +70,9 @@ type IntentNewForm struct {
 func (i *IntentNewForm) run(engine *engine.Engine, handler Handler) {
 	err := engine.NewForm(i.databaseID, i.formID, i.formName, i.comment, i.formType)
 	if nil != err {
-		handler(resultFail(err))
+		handler(connector.ResultFail(err))
 	}
-	handler(resultSuccess(nil))
+	handler(connector.ResultSuccess(nil))
 }
 
 // IntentPut 新建新增数据意图
@@ -86,9 +86,9 @@ type IntentPut struct {
 func (i *IntentPut) run(engine *engine.Engine, handler Handler) {
 	hashKey, err := engine.Put(i.databaseID, i.formID, i.key, i.value)
 	if nil != err {
-		handler(resultFail(err))
+		handler(connector.ResultFail(err))
 	}
-	handler(resultSuccess(hashKey))
+	handler(connector.ResultSuccess(hashKey))
 }
 
 // IntentSet 新建新增或修改数据意图
@@ -102,9 +102,9 @@ type IntentSet struct {
 func (i *IntentSet) run(engine *engine.Engine, handler Handler) {
 	hashKey, err := engine.Set(i.databaseID, i.formID, i.key, i.value)
 	if nil != err {
-		handler(resultFail(err))
+		handler(connector.ResultFail(err))
 	}
-	handler(resultSuccess(hashKey))
+	handler(connector.ResultSuccess(hashKey))
 }
 
 // IntentGet 新建获取数据意图
@@ -117,9 +117,9 @@ type IntentGet struct {
 func (i *IntentGet) run(engine *engine.Engine, handler Handler) {
 	value, err := engine.Get(i.databaseID, i.formID, i.key)
 	if nil != err {
-		handler(resultFail(err))
+		handler(connector.ResultFail(err))
 	}
-	handler(resultSuccess(value))
+	handler(connector.ResultSuccess(value))
 }
 
 // IntentDel 新建删除数据意图
@@ -132,9 +132,9 @@ type IntentDel struct {
 func (i *IntentDel) run(engine *engine.Engine, handler Handler) {
 	value, err := engine.Del(i.databaseID, i.formID, i.key)
 	if nil != err {
-		handler(resultFail(err))
+		handler(connector.ResultFail(err))
 	}
-	handler(resultSuccess(value))
+	handler(connector.ResultSuccess(value))
 }
 
 // IntentInsert 新建新增数据意图
@@ -147,9 +147,9 @@ type IntentInsert struct {
 func (i *IntentInsert) run(engine *engine.Engine, handler Handler) {
 	hashKey, err := engine.Insert(i.databaseID, i.formID, i.value)
 	if nil != err {
-		handler(resultFail(err))
+		handler(connector.ResultFail(err))
 	}
-	handler(resultSuccess(hashKey))
+	handler(connector.ResultSuccess(hashKey))
 }
 
 // IntentUpdate 新建更新数据意图
@@ -162,9 +162,9 @@ type IntentUpdate struct {
 func (i *IntentUpdate) run(engine *engine.Engine, handler Handler) {
 	hashKey, err := engine.Update(i.databaseID, i.formID, i.value)
 	if nil != err {
-		handler(resultFail(err))
+		handler(connector.ResultFail(err))
 	}
-	handler(resultSuccess(hashKey))
+	handler(connector.ResultSuccess(hashKey))
 }
 
 // IntentSelect 新建根据条件检索意图
@@ -182,9 +182,9 @@ type data struct {
 func (i *IntentSelect) run(engine *engine.Engine, handler Handler) {
 	count, values, err := engine.Select(i.databaseID, i.formID, i.selectorBytes)
 	if nil != err {
-		handler(resultFail(err))
+		handler(connector.ResultFail(err))
 	}
-	handler(resultSuccess(&data{Count: count, Values: values}))
+	handler(connector.ResultSuccess(&data{Count: count, Values: values}))
 }
 
 // IntentDelete 新建根据条件删除意图
@@ -197,7 +197,7 @@ type IntentDelete struct {
 func (i *IntentDelete) run(engine *engine.Engine, handler Handler) {
 	count, err := engine.Delete(i.databaseID, i.formID, i.selectorBytes)
 	if nil != err {
-		handler(resultFail(err))
+		handler(connector.ResultFail(err))
 	}
-	handler(resultSuccess(count))
+	handler(connector.ResultSuccess(count))
 }

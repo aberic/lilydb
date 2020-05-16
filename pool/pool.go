@@ -25,6 +25,7 @@
 package pool
 
 import (
+	"github.com/aberic/lilydb/connector"
 	"github.com/aberic/lilydb/engine"
 	"sync/atomic"
 )
@@ -65,7 +66,7 @@ func NewPool(engine *engine.Engine, options ...Option) (*Pool, error) {
 // Submit 提交任务
 func (p *Pool) Submit(intent Intent, handler Handler) {
 	if !p.jobGroup.submit(intent, handler) {
-		handler(resultFail(ErrPoolOverload))
+		handler(connector.ResultFail(ErrPoolOverload))
 	}
 }
 

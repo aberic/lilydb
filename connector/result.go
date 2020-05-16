@@ -22,29 +22,25 @@
  * SOFTWARE.
  */
 
-package pool
+package connector
 
-import (
-	"github.com/aberic/lilydb/connector"
-)
-
-func resultSuccess(value interface{}) *Result {
-	return &Result{code: connector.Success, value: value}
+func ResultSuccess(value interface{}) *Result {
+	return &Result{code: Success, value: value}
 }
 
-func resultFail(error error) *Result {
-	return &Result{code: connector.Fail, error: error}
+func ResultFail(error error) *Result {
+	return &Result{code: Fail, error: error}
 }
 
 // Result 返回对象
 type Result struct {
-	code  connector.Code
+	code  Code
 	error error
 	value interface{}
 }
 
 // Code 返回码
-func (r *Result) Code() (code connector.Code) {
+func (r *Result) Code() (code Code) {
 	return r.code
 }
 
