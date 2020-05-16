@@ -24,6 +24,27 @@
 
 package connector
 
+// Code 返回码
+type Code int
+
+const (
+	// Success 返回成功
+	Success Code = iota
+	// Fail 返回失败
+	Fail
+)
+
+// Request 请求对象
+type Request interface {
+}
+
+// Response 返回对象
+type Response interface {
+	Code() (code Code)
+	Error() (error error)
+	Data() (value interface{})
+}
+
 // FormType 表引擎类型
 type FormType int
 
