@@ -56,16 +56,18 @@ func (j *job) run() {
 	// 不断的从JobsChannel内部任务队列中拿任务
 	for j.alive {
 		if task, ok := <-j.pool.jobsChannel; ok {
+			j.pool.incIdle()
 			j.mu.Lock()
 			// 如果拿到任务,则执行task任务
-			task.intent.Run(j.pool.engine, task.handler)
+			task.intent.run(j.pool.engine, task.handler)
 			j.lastActive = time.Now()
 			j.mu.Unlock()
+			j.pool.decIdle()
 		}
 	}
 }
 
-func (j *job) lock() bool {
+func (j *job) lockCheckRelease() bool {
 	defer j.mu.Unlock()
 	j.mu.Lock()
 	if j.lastActive.Add(j.pool.options.expiryDuration).Before(time.Now()) {

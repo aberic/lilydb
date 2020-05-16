@@ -34,11 +34,11 @@ type Pool struct {
 	engine      *engine.Engine // 存储引擎管理器
 	jobGroup    *jobGroup      // 工作组
 	active      int32          // 正在活跃的连接数量
+	idle        int32          // 空闲中的连接数量
 	blockingNum int            // blockingNum 已Submit的数量
 	infinite    bool           // 表示该池是否为无限容量
 	options     *Options       // 参数配置
-	//协程池内部的任务就绪队列
-	jobsChannel chan task
+	jobsChannel chan task      // 协程池内部的任务就绪队列
 }
 
 // NewPool 新建连接池
@@ -62,13 +62,9 @@ func NewPool(engine *engine.Engine, options ...Option) (*Pool, error) {
 	return p, nil
 }
 
-func (p *Pool) run() {
-	p.jobGroup.run()
-}
-
 // Submit 提交任务
 func (p *Pool) Submit(intent Intent, handler Handler) {
-	if !p.jobGroup.work(intent, handler) {
+	if !p.jobGroup.submit(intent, handler) {
 		handler(resultFail(ErrPoolOverload))
 	}
 }
@@ -86,4 +82,19 @@ func (p *Pool) incActive() {
 // decActive decreases the number of the currently active goroutines.
 func (p *Pool) decActive() {
 	atomic.AddInt32(&p.active, -1)
+}
+
+// Idle returns the number of the currently idle goroutines.
+func (p *Pool) Idle() int {
+	return int(atomic.LoadInt32(&p.idle))
+}
+
+// incIdle increases the number of the currently idle goroutines.
+func (p *Pool) incIdle() {
+	atomic.AddInt32(&p.idle, 1)
+}
+
+// decIdle decreases the number of the currently idle goroutines.
+func (p *Pool) decIdle() {
+	atomic.AddInt32(&p.idle, -1)
 }

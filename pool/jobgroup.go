@@ -30,9 +30,10 @@ import (
 )
 
 type jobGroup struct {
-	pool            *Pool  // 连接池对象
-	stabilizeJobs   []*job // 固定工作组
-	instabilityJobs []*job // 动态工作组
+	pool            *Pool       // 连接池对象
+	stabilizeJobs   []*job      // 固定工作组
+	instabilityJobs []*job      // 动态工作组
+	scheduled       *time.Timer // 定时检测任务
 	once            sync.Once
 	mu              sync.Mutex
 }
@@ -42,11 +43,15 @@ func newJobGroup(pool *Pool) *jobGroup {
 	for i := 0; i < pool.options.minIdle; i++ {
 		stabilizeJobs[i] = newStabilizeJob(pool)
 	}
-	return &jobGroup{
+	jg := &jobGroup{
 		pool:            pool,
 		stabilizeJobs:   stabilizeJobs,
 		instabilityJobs: []*job{},
+		scheduled:       time.NewTimer(pool.options.expiryDuration),
 	}
+	jg.run()
+	go jg.check()
+	return jg
 }
 
 func (jg *jobGroup) run() {
@@ -59,8 +64,12 @@ func (jg *jobGroup) run() {
 	})
 }
 
-func (jg *jobGroup) work(intent Intent, handler Handler) bool {
+func (jg *jobGroup) submit(intent Intent, handler Handler) bool {
 	task := task{intent: intent, handler: handler}
+	if jg.pool.Idle() > 0 { // 如果有空闲协程
+		jg.pool.jobsChannel <- task
+		return true
+	}
 	if jg.pool.infinite { // 如果该池是否为无限容量
 		job := newInstabilityJobs(jg.pool)
 		jg.mu.Lock()
@@ -75,14 +84,19 @@ func (jg *jobGroup) work(intent Intent, handler Handler) bool {
 }
 
 func (jg *jobGroup) check() {
-	for index, job := range jg.instabilityJobs {
-		if job.lock() {
-			jg.mu.Lock()
-			jg.instabilityJobs = append(jg.instabilityJobs[0:index], jg.instabilityJobs[index+1:]...)
-			jg.mu.Unlock()
-			break
+	jg.scheduled.Reset(jg.pool.options.expiryDuration)
+	for {
+		select {
+		case <-jg.scheduled.C:
+			for index, job := range jg.instabilityJobs {
+				if job.lockCheckRelease() {
+					jg.mu.Lock()
+					jg.instabilityJobs = append(jg.instabilityJobs[0:index], jg.instabilityJobs[index+1:]...)
+					jg.mu.Unlock()
+					break
+				}
+			}
+			jg.scheduled.Reset(jg.pool.options.expiryDuration)
 		}
 	}
-	time.Sleep(jg.pool.options.expiryDuration)
-	jg.check()
 }
