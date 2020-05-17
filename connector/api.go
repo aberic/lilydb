@@ -24,6 +24,8 @@
 
 package connector
 
+import api "github.com/aberic/lilydb/connector/grpc"
+
 // Code 返回码
 type Code int
 
@@ -45,25 +47,16 @@ type Response interface {
 	Data() (value interface{})
 }
 
-// FormType 表引擎类型
-type FormType int
-
-const (
-	// FormTypeSiam 静态索引方法(static index access method)
-	FormTypeSiam FormType = iota
-	// FormTypeMSiam 内存静态索引存取方法(memory static index access method)
-	FormTypeMSiam
-)
-
 // Form 表接口
 //
 // 提供表基本操作方法
 type Form interface {
-	AutoID() *uint64    // AutoID 返回表当前自增ID值
-	ID() string         // ID 返回表唯一ID
-	Name() string       // Name 返回表名称
-	Comment() string    // Comment 获取表描述
-	FormType() FormType // FormType 获取表类型
+	AutoID() *uint64        // AutoID 返回表当前自增ID值
+	ID() string             // ID 返回表唯一ID
+	Name() string           // Name 返回表名称
+	Comment() string        // Comment 获取表描述
+	FormType() api.FormType // FormType 获取表类型
+	Indexes() map[string]*api.Index
 	// Insert 新增数据
 	//
 	// value 插入数据对象

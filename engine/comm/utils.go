@@ -33,6 +33,8 @@ var (
 	ErrDatabaseExist = errors.New("database already exist")
 	// ErrDataNotFound 自定义error信息
 	ErrDataNotFound = errors.New("database not found")
+	// ErrFormExist 自定义error信息
+	ErrFormExist = errors.New("form already exist")
 	// ErrFormNotFoundOrSupport 自定义error信息
 	ErrFormNotFoundOrSupport = errors.New("form not found or type not support")
 	// ErrKeyNotFound 自定义error信息
@@ -41,8 +43,6 @@ var (
 	ErrLinkNotFound = errors.New("link not found")
 	//// ErrIndexFileNotFound 自定义error信息
 	//ErrIndexFileNotFound = errors.New("index file not found")
-	//// ErrFormExist 自定义error信息
-	//ErrFormExist = errors.New("form already exist")
 	//// ErrKeyExist 自定义error信息
 	//ErrKeyExist = errors.New("key already exist")
 	//// ErrIndexExist 自定义error信息

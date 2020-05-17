@@ -53,10 +53,10 @@ message Index {
 
 // FormType 表类型
 enum FormType {
-    // SQL 关联数据库类型
-    SQL = 0;
-    // Doc 文档数据库类型
-    Doc = 1;
+    // Siam 静态索引方法(static index access method)
+    Siam = 0;
+    // MSiam 内存静态索引存取方法(memory static index access method)
+    MSiam = 1;
 }
 
 // Selector 检索选择器

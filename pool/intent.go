@@ -26,6 +26,7 @@ package pool
 
 import (
 	"github.com/aberic/lilydb/connector"
+	api "github.com/aberic/lilydb/connector/grpc"
 	"github.com/aberic/lilydb/engine"
 )
 
@@ -45,13 +46,12 @@ type Intent interface {
 
 // IntentNewDatabase 新建库意图
 type IntentNewDatabase struct {
-	databaseID   string
 	databaseName string
 	comment      string
 }
 
 func (i *IntentNewDatabase) run(engine *engine.Engine, handler Handler) {
-	err := engine.NewDatabase(i.databaseID, i.databaseName, i.comment)
+	err := engine.NewDatabase(i.databaseName, i.comment)
 	if nil != err {
 		handler(connector.ResultFail(err))
 	}
@@ -60,15 +60,14 @@ func (i *IntentNewDatabase) run(engine *engine.Engine, handler Handler) {
 
 // IntentNewForm 新建表意图
 type IntentNewForm struct {
-	databaseID string
-	formID     string
-	formName   string
-	comment    string
-	formType   connector.FormType
+	databaseName string
+	formName     string
+	comment      string
+	formType     api.FormType
 }
 
 func (i *IntentNewForm) run(engine *engine.Engine, handler Handler) {
-	err := engine.NewForm(i.databaseID, i.formID, i.formName, i.comment, i.formType)
+	err := engine.NewForm(i.databaseName, i.formName, i.comment, i.formType)
 	if nil != err {
 		handler(connector.ResultFail(err))
 	}

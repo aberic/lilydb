@@ -27,7 +27,7 @@ package msiam
 import (
 	"fmt"
 	"github.com/aberic/gnomon"
-	"github.com/aberic/lilydb/connector"
+	api "github.com/aberic/lilydb/connector/grpc"
 	"github.com/aberic/lilydb/engine/comm"
 	"github.com/aberic/lilydb/engine/msiam/index"
 	"github.com/aberic/lilydb/engine/siam/utils"
@@ -55,7 +55,7 @@ func NewForm(databaseID, formID, formName, comment string) *Form {
 		id:         formID,
 		comment:    comment,
 		indexes:    map[string]*index.Index{},
-		formType:   connector.FormTypeMSiam,
+		formType:   api.FormType_MSiam,
 		databaseID: databaseID,
 	}
 	fm.NewIndex(indexDefaultID, true) // 创建默认主键
@@ -68,7 +68,7 @@ type Form struct {
 	name       string                  // 表名，根据需求可以随时变化
 	autoID     *uint64                 // 自增id
 	comment    string                  // 描述
-	formType   connector.FormType      // 表类型 siam
+	formType   api.FormType            // 表类型 siam
 	indexes    map[string]*index.Index // 索引ID集合
 	databaseID string                  // 所属数据库ID
 
@@ -96,8 +96,16 @@ func (f *Form) Comment() string {
 }
 
 // FormType 获取表类型
-func (f *Form) FormType() connector.FormType {
+func (f *Form) FormType() api.FormType {
 	return f.formType
+}
+
+func (f *Form) Indexes() map[string]*api.Index {
+	var idx = make(map[string]*api.Index)
+	for _, i := range f.indexes {
+		idx[i.ID()] = &api.Index{ID: i.ID(), Primary: i.Primary(), KeyStructure: i.KeyStructure()}
+	}
+	return idx
 }
 
 // NewIndex 新建索引
