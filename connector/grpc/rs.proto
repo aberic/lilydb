@@ -62,16 +62,6 @@ message ReqCreateDatabase {
     string Comment = 2;
 }
 
-// RespDatabase 响应新建数据库
-message RespDatabase {
-    // Code 响应结果码
-    Code Code = 1;
-    // database 数据库对象
-    Database Database = 2;
-    // ErrMsg 错误信息
-    string ErrMsg = 3;
-}
-
 // ReqCreateForm 请求创建表
 message ReqCreateForm {
     // DatabaseName 数据库名称
@@ -102,58 +92,6 @@ message ReqCreateIndex {
     string FormName = 2;
     // Comment 主键结构名，按照规范结构组成的主键字段名称，由对象结构层级字段通过'.'组成，如'i','in.s'
     string KeyStructure = 3;
-}
-
-// ReqPutD 新增数据
-message ReqPutD {
-    // Key 数据库名称
-    string Key = 1;
-    // Value 插入数据对象
-    bytes Value = 2;
-}
-
-// RespPutD 响应新增数据
-message RespPutD {
-    // Code 响应结果码
-    Code Code = 1;
-    // HashKey HashKey
-    uint64 HashKey = 2;
-    // ErrMsg 错误信息
-    string ErrMsg = 3;
-}
-
-// ReqSetD 新增数据
-message ReqSetD {
-    // Key 数据库名称
-    string Key = 1;
-    // Value 插入数据对象
-    bytes Value = 2;
-}
-
-// RespSetD 响应新增数据
-message RespSetD {
-    // Code 响应结果码
-    Code Code = 1;
-    // HashKey HashKey
-    uint64 HashKey = 2;
-    // ErrMsg 错误信息
-    string ErrMsg = 3;
-}
-
-// ReqGetD 获取数据
-message ReqGetD {
-    // Key 数据库名称
-    string Key = 1;
-}
-
-// RespGetD 响应获取数据
-message RespGetD {
-    // Code 响应结果码
-    Code Code = 1;
-    // Value Value
-    bytes Value = 2;
-    // ErrMsg 错误信息
-    string ErrMsg = 3;
 }
 
 // ReqPut 新增数据
@@ -216,6 +154,28 @@ message RespGet {
     Code Code = 1;
     // Value Value
     bytes Value = 2;
+    // ErrMsg 错误信息
+    string ErrMsg = 3;
+}
+
+// ReqInsert 新增数据
+message ReqInsert {
+    // DatabaseName 数据库名称
+    string DatabaseName = 1;
+    // FormName 表名称
+    string FormName = 2;
+    // Key 数据库名称
+    string Key = 3;
+    // Value 插入数据对象
+    bytes Value = 4;
+}
+
+// RespInsert 响应新增数据
+message RespInsert {
+    // Code 响应结果码
+    Code Code = 1;
+    // HashKey HashKey
+    uint64 HashKey = 2;
     // ErrMsg 错误信息
     string ErrMsg = 3;
 }

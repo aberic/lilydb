@@ -28,9 +28,11 @@ import (
 	"github.com/aberic/gnomon"
 	"github.com/aberic/lilydb/config"
 	"github.com/aberic/lilydb/connector"
+	api "github.com/aberic/lilydb/connector/grpc"
 	"github.com/aberic/lilydb/engine/comm"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 )
 
@@ -61,149 +63,200 @@ type Engine struct {
 	mu        sync.Mutex
 }
 
+// GetDatabases 获取数据库集合
+func (e *Engine) GetDatabases() []*api.Database {
+	var respDBs []*api.Database
+	for _, db := range e.databaseArr() {
+		respDBs = append(respDBs, &api.Database{ID: db.id, Name: db.name, Comment: db.comment, Forms: e.formatForms(db)})
+	}
+	return respDBs
+}
+
+// databaseArr 获取数据库集合
+func (e *Engine) databaseArr() []*database {
+	var dbs []*database
+	for _, db := range e.databases {
+		dbs = append(dbs, db)
+	}
+	return dbs
+}
+
+// GetForms 根据数据库名获取表集合
+func (e *Engine) GetForms(databaseName string) []*api.Form {
+	db := e.databases[databaseName]
+	var fms []*api.Form
+	for _, form := range db.forms {
+		fms = append(fms, &api.Form{
+			ID:       form.ID(),
+			Name:     form.Name(),
+			Comment:  form.Comment(),
+			FormType: form.FormType(),
+			Indexes:  form.Indexes(),
+		})
+	}
+	return fms
+}
+
+func (e *Engine) formatForms(db *database) map[string]*api.Form {
+	var fms = make(map[string]*api.Form)
+	for _, form := range db.forms {
+		fms[form.Name()] = &api.Form{
+			ID:       form.ID(),
+			Name:     form.Name(),
+			Comment:  form.Comment(),
+			FormType: form.FormType(),
+			Indexes:  form.Indexes(),
+		}
+	}
+	return fms
+}
+
 // NewDatabase 新建数据库
 //
 // 新建数据库会同时创建一个名为_default的表，未指定表明的情况下使用put/get等方法会操作该表
 //
-// databaseID 数据库唯一ID，不能改变
-//
 // databaseName 数据库名称
 //
 // comment 数据库描述
-func (e *Engine) NewDatabase(databaseID, databaseName, comment string) error {
-	if err := mkDataDir(databaseID); nil != err {
-		return err
-	}
+func (e *Engine) NewDatabase(databaseName, comment string) error {
 	defer e.mu.Unlock()
 	e.mu.Lock()
-	e.databases[databaseID] = &database{id: databaseID, name: databaseName, comment: comment, forms: map[string]connector.Form{}}
+	// 确定库名不重复
+	for k := range e.databases {
+		if k == databaseName {
+			return comm.ErrDatabaseExist
+		}
+	}
+	// 确保数据库唯一ID不重复
+	databaseID := e.name2ID(databaseName)
+	if err := e.mkDataDir(databaseID); nil != err {
+		return err
+	}
+	e.databases[databaseName] = &database{id: databaseID, name: databaseName, comment: comment, forms: map[string]connector.Form{}}
 	return nil
 }
 
 // NewForm 新建表，会创建默认自增主键
 //
-// databaseID 数据库唯一ID，不能改变
-//
-// formID 表唯一ID，不能改变
+// databaseName 数据库名
 //
 // formName 表名称
 //
 // comment 表描述
 //
 // formType 表类型
-func (e *Engine) NewForm(databaseID, formID, formName, comment string, formType connector.FormType) error {
-	if db, exist := e.databases[databaseID]; exist {
-		db.newForm(formID, formName, comment, formType)
-		return nil
+func (e *Engine) NewForm(databaseName, formName, comment string, formType api.FormType) error {
+	if db, exist := e.databases[databaseName]; exist {
+		return db.newForm(formName, comment, formType)
 	}
 	return comm.ErrDataNotFound
 }
 
 // Put 新增数据
 //
-// databaseID 数据库唯一ID
+// databaseID 数据库名
 //
-// formID 表唯一ID
+// formName 表名
 //
 // key 插入的key
 //
 // value 插入数据对象
 //
 // 返回 hashKey
-func (e *Engine) Put(databaseID, formID, key string, value interface{}) (uint64, error) {
-	if db, exist := e.databases[databaseID]; exist {
-		return db.put(formID, key, value)
+func (e *Engine) Put(databaseName, formName, key string, value interface{}) (uint64, error) {
+	if db, exist := e.databases[databaseName]; exist {
+		return db.put(formName, key, value)
 	}
 	return 0, comm.ErrDataNotFound
 }
 
 // Set 新增或修改数据
 //
-// databaseID 数据库唯一ID
+// databaseID 数据库名
 //
-// formID 表唯一ID
+// formName 表名
 //
 // key 插入的key
 //
 // value 插入数据对象
 //
 // 返回 hashKey
-func (e *Engine) Set(databaseID, formID, key string, value interface{}) (uint64, error) {
-	if db, exist := e.databases[databaseID]; exist {
-		return db.set(formID, key, value)
+func (e *Engine) Set(databaseName, formName, key string, value interface{}) (uint64, error) {
+	if db, exist := e.databases[databaseName]; exist {
+		return db.set(formName, key, value)
 	}
 	return 0, comm.ErrDataNotFound
 }
 
 // Get 获取数据
 //
-// databaseID 数据库唯一ID
+// databaseID 数据库名
 //
-// formID 表唯一ID
+// formName 表名
 //
 // key 指定的key
 //
 // 返回 获取的数据对象
-func (e *Engine) Get(databaseID, formID, key string) (interface{}, error) {
-	if db, exist := e.databases[databaseID]; exist {
-		return db.get(formID, key)
+func (e *Engine) Get(databaseName, formName, key string) (interface{}, error) {
+	if db, exist := e.databases[databaseName]; exist {
+		return db.get(formName, key)
 	}
 	return 0, comm.ErrDataNotFound
 }
 
 // Del 删除数据
 //
-// databaseID 数据库唯一ID
+// databaseID 数据库名
 //
-// formID 表唯一ID
+// formName 表名
 //
 // key 指定的key
 //
 // 返回 删除的数据对象
-func (e *Engine) Del(databaseID, formID, key string) (interface{}, error) {
-	if db, exist := e.databases[databaseID]; exist {
-		return db.del(formID, key)
+func (e *Engine) Del(databaseName, formName, key string) (interface{}, error) {
+	if db, exist := e.databases[databaseName]; exist {
+		return db.del(formName, key)
 	}
 	return 0, comm.ErrDataNotFound
 }
 
 // Insert 新增数据
 //
-// databaseID 数据库唯一ID
+// databaseID 数据库名
 //
-// formID 表唯一ID
+// formName 表名
 //
 // value 插入数据对象
 //
 // 返回 hashKey
-func (e *Engine) Insert(databaseID, formID string, value interface{}) (uint64, error) {
-	if db, exist := e.databases[databaseID]; exist {
-		return db.insert(formID, value)
+func (e *Engine) Insert(databaseName, formName string, value interface{}) (uint64, error) {
+	if db, exist := e.databases[databaseName]; exist {
+		return db.insert(formName, value)
 	}
 	return 0, comm.ErrDataNotFound
 }
 
 // Update 更新数据，如果存在数据，则更新，如不存在，则插入
 //
-// databaseID 数据库唯一ID
+// databaseID 数据库名
 //
-// formID 表唯一ID
+// formName 表名
 //
 // value 插入数据对象
 //
 // 返回 hashKey
-func (e *Engine) Update(databaseID, formID string, value interface{}) (uint64, error) {
-	if db, exist := e.databases[databaseID]; exist {
-		return db.update(formID, value)
+func (e *Engine) Update(databaseName, formName string, value interface{}) (uint64, error) {
+	if db, exist := e.databases[databaseName]; exist {
+		return db.update(formName, value)
 	}
 	return 0, comm.ErrDataNotFound
 }
 
 // Select 根据条件检索
 //
-// databaseID 数据库唯一ID
+// databaseID 数据库名
 //
-// formID 表唯一ID
+// formName 表名
 //
 // selectorBytes 选择器字节数组，自定义转换策略
 //
@@ -212,33 +265,50 @@ func (e *Engine) Update(databaseID, formID string, value interface{}) (uint64, e
 // return values 检索结果集合
 //
 // return err 检索错误信息，如果有
-func (e *Engine) Select(databaseID, formID string, selectorBytes []byte) (count int32, values []interface{}, err error) {
-	if db, exist := e.databases[databaseID]; exist {
-		return db.query(formID, selectorBytes)
+func (e *Engine) Select(databaseName, formName string, selectorBytes []byte) (count int32, values []interface{}, err error) {
+	if db, exist := e.databases[databaseName]; exist {
+		return db.query(formName, selectorBytes)
 	}
 	return 0, nil, comm.ErrDataNotFound
 }
 
 // Delete 根据条件删除
 //
-// databaseID 数据库唯一ID
+// databaseID 数据库名
 //
-// formID 表唯一ID
+// formName 表名
 //
 // selectorBytes 选择器字节数组，自定义转换策略
 //
 // return count 删除结果总条数
 //
 // return err 删除错误信息，如果有
-func (e *Engine) Delete(databaseID, formID string, selectorBytes []byte) (count int32, err error) {
-	if db, exist := e.databases[databaseID]; exist {
-		return db.delete(formID, selectorBytes)
+func (e *Engine) Delete(databaseName, formName string, selectorBytes []byte) (count int32, err error) {
+	if db, exist := e.databases[databaseName]; exist {
+		return db.delete(formName, selectorBytes)
 	}
 	return 0, comm.ErrDataNotFound
 }
 
+// name2ID 确保数据库唯一ID不重复
+func (e *Engine) name2ID(name string) string {
+	id := gnomon.HashMD516(name)
+	have := true
+	for have {
+		have = false
+		for _, v := range e.databases {
+			if v.id == id {
+				have = true
+				id = gnomon.HashMD516(strings.Join([]string{id, gnomon.StringRandSeq(3)}, ""))
+				break
+			}
+		}
+	}
+	return id
+}
+
 // mkDataDir 创建库存储目录
-func mkDataDir(dataName string) (err error) {
+func (e *Engine) mkDataDir(dataName string) (err error) {
 	dataPath := filepath.Join(config.Obtain().DataDir, dataName)
 	if gnomon.FilePathExists(dataPath) {
 		return comm.ErrDatabaseExist

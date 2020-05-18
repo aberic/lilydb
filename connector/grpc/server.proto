@@ -20,7 +20,7 @@ service LilyAPI {
     rpc ObtainForms (ReqForms) returns (RespForms) {
     }
     // CreateDatabase 新建数据库
-    rpc CreateDatabase (ReqCreateDatabase) returns (RespDatabase) {
+    rpc CreateDatabase (ReqCreateDatabase) returns (Resp) {
     }
     // CreateForm 创建表
     rpc CreateForm (ReqCreateForm) returns (Resp) {
@@ -31,15 +31,6 @@ service LilyAPI {
     // CreateIndex 新建索引
     rpc CreateIndex (ReqCreateIndex) returns (Resp) {
     }
-    // PutD 新增数据
-    rpc PutD (ReqPutD) returns (RespPutD) {
-    }
-    // SetD 新增数据
-    rpc SetD (ReqSetD) returns (RespSetD) {
-    }
-    // GetD 获取数据
-    rpc GetD (ReqGetD) returns (RespGetD) {
-    }
     // Put 新增数据
     rpc Put (ReqPut) returns (RespPut) {
     }
@@ -48,6 +39,9 @@ service LilyAPI {
     }
     // Get 获取数据
     rpc Get (ReqGet) returns (RespGet) {
+    }
+    // Insert 新增数据
+    rpc Insert (ReqInsert) returns (RespInsert) {
     }
     // Select 获取数据
     rpc Select (ReqSelect) returns (RespSelect) {

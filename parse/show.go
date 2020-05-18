@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 aberic
+ * Copyright (c) 2020. aberic
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,69 @@
  * SOFTWARE.
  */
 
-package comm
+package parse
 
 import (
-	"errors"
+	"github.com/aberic/lilydb/connector"
+	"strings"
 )
 
-var (
-	// ErrDatabaseExist 自定义error信息
-	ErrDatabaseExist = errors.New("database already exist")
-	// ErrDataNotFound 自定义error信息
-	ErrDataNotFound = errors.New("database not found")
-	// ErrFormExist 自定义error信息
-	ErrFormExist = errors.New("form already exist")
-	// ErrFormNotFoundOrSupport 自定义error信息
-	ErrFormNotFoundOrSupport = errors.New("form not found or type not support")
-	// ErrKeyNotFound 自定义error信息
-	ErrKeyNotFound = errors.New("key not found")
-	// ErrLinkNotFound 自定义error信息
-	ErrLinkNotFound = errors.New("link not found")
-	//// ErrIndexFileNotFound 自定义error信息
-	//ErrIndexFileNotFound = errors.New("index file not found")
-	//// ErrKeyExist 自定义error信息
-	//ErrKeyExist = errors.New("key already exist")
-	//// ErrIndexExist 自定义error信息
-	//ErrIndexExist = errors.New("index already exist")
-	//// ErrKeyIsNil 自定义error信息
-	//ErrKeyIsNil = errors.New("put keyStructure can not be nil")
-)
+type show struct {
+	syntaxGroup []syntax
+}
+
+func newShow() *show {
+	return &show{
+		syntaxGroup: []syntax{
+			new(conf),
+			new(database),
+			new(forms),
+		},
+	}
+}
+
+func (s *show) name() string {
+	return "show"
+}
+
+func (s *show) analysis(params []string) connector.Response {
+	for _, st := range s.syntaxGroup {
+		if st.name() == params[0] {
+			return st.analysis(params)
+		}
+	}
+	return connector.ResultFail(syntaxErr(strings.Join(params, " ")))
+}
+
+type conf struct {
+}
+
+func (c *conf) name() string {
+	return "config"
+}
+
+func (c *conf) analysis(params []string) connector.Response {
+	return nil
+}
+
+type database struct {
+}
+
+func (d *database) name() string {
+	return "database"
+}
+
+func (d *database) analysis(params []string) connector.Response {
+	return nil
+}
+
+type forms struct {
+}
+
+func (f *forms) name() string {
+	return "forms"
+}
+
+func (f *forms) analysis(params []string) connector.Response {
+	return nil
+}

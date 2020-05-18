@@ -25,10 +25,14 @@
 package engine
 
 import (
+	"github.com/aberic/gnomon"
 	"github.com/aberic/lilydb/connector"
+	api "github.com/aberic/lilydb/connector/grpc"
 	"github.com/aberic/lilydb/engine/comm"
 	"github.com/aberic/lilydb/engine/msiam"
 	"github.com/aberic/lilydb/engine/siam"
+	"strings"
+	"sync"
 )
 
 // database 数据库对象
@@ -39,26 +43,36 @@ type database struct {
 	name    string                    // 数据库名称，根据需求可以随时变化
 	comment string                    // 描述
 	forms   map[string]connector.Form // 表集合
+	mu      sync.Mutex
 }
 
 // newForm 新建表，会创建默认自增主键
-//
-// formID 表唯一ID，不能改变
 //
 // formName 表名称
 //
 // comment 表描述
 //
 // formType 表类型
-func (db *database) newForm(formID, formName, comment string, formType connector.FormType) {
+func (db *database) newForm(formName, comment string, formType api.FormType) error {
+	defer db.mu.Unlock()
+	db.mu.Lock()
+	// 确定库名不重复
+	for k := range db.forms {
+		if k == formName {
+			return comm.ErrFormExist
+		}
+	}
+	// 确保数据库唯一ID不重复
+	formID := db.name2ID(formName)
 	switch formType {
 	default:
 		panic("form type error")
-	case connector.FormTypeSiam:
-		db.forms[formID] = siam.NewForm(db.id, formID, formName, comment)
-	case connector.FormTypeMSiam:
-		db.forms[formID] = msiam.NewForm(db.id, formID, formName, comment)
+	case api.FormType_Siam:
+		db.forms[formName] = siam.NewForm(db.id, formID, formName, comment)
+	case api.FormType_MSiam:
+		db.forms[formName] = msiam.NewForm(db.id, formID, formName, comment)
 	}
+	return nil
 }
 
 // Put 新增数据
@@ -68,12 +82,12 @@ func (db *database) newForm(formID, formName, comment string, formType connector
 // value 插入数据对象
 //
 // 返回 hashKey
-func (db *database) put(formID, key string, value interface{}) (uint64, error) {
-	if fm, exist := db.forms[formID]; exist {
+func (db *database) put(formName, key string, value interface{}) (uint64, error) {
+	if fm, exist := db.forms[formName]; exist {
 		switch fm.FormType() {
 		default:
 			return 0, comm.ErrFormNotFoundOrSupport
-		case connector.FormTypeMSiam:
+		case api.FormType_MSiam:
 			return fm.Put(key, value)
 		}
 	}
@@ -87,12 +101,12 @@ func (db *database) put(formID, key string, value interface{}) (uint64, error) {
 // value 插入数据对象
 //
 // 返回 hashKey
-func (db *database) set(formID, key string, value interface{}) (uint64, error) {
-	if fm, exist := db.forms[formID]; exist {
+func (db *database) set(formName, key string, value interface{}) (uint64, error) {
+	if fm, exist := db.forms[formName]; exist {
 		switch fm.FormType() {
 		default:
 			return 0, comm.ErrFormNotFoundOrSupport
-		case connector.FormTypeMSiam:
+		case api.FormType_MSiam:
 			return fm.Set(key, value)
 		}
 	}
@@ -104,12 +118,12 @@ func (db *database) set(formID, key string, value interface{}) (uint64, error) {
 // key 指定的key
 //
 // 返回 获取的数据对象
-func (db *database) get(formID, key string) (interface{}, error) {
-	if fm, exist := db.forms[formID]; exist {
+func (db *database) get(formName, key string) (interface{}, error) {
+	if fm, exist := db.forms[formName]; exist {
 		switch fm.FormType() {
 		default:
 			return 0, comm.ErrFormNotFoundOrSupport
-		case connector.FormTypeMSiam:
+		case api.FormType_MSiam:
 			return fm.Get(key)
 		}
 	}
@@ -121,42 +135,59 @@ func (db *database) get(formID, key string) (interface{}, error) {
 // key 指定的key
 //
 // 返回 删除的数据对象
-func (db *database) del(formID, key string) (interface{}, error) {
-	if fm, exist := db.forms[formID]; exist {
+func (db *database) del(formName, key string) (interface{}, error) {
+	if fm, exist := db.forms[formName]; exist {
 		switch fm.FormType() {
 		default:
 			return 0, comm.ErrFormNotFoundOrSupport
-		case connector.FormTypeMSiam:
+		case api.FormType_MSiam:
 			return fm.Del(key)
 		}
 	}
 	return 0, comm.ErrFormNotFoundOrSupport
 }
 
-func (db *database) insert(formID string, value interface{}) (uint64, error) {
-	if fm, exist := db.forms[formID]; exist && fm.FormType() == connector.FormTypeSiam {
+func (db *database) insert(formName string, value interface{}) (uint64, error) {
+	if fm, exist := db.forms[formName]; exist && fm.FormType() == api.FormType_Siam {
 		return fm.Insert(value)
 	}
 	return 0, comm.ErrFormNotFoundOrSupport
 }
 
-func (db *database) update(formID string, value interface{}) (uint64, error) {
-	if fm, exist := db.forms[formID]; exist && fm.FormType() == connector.FormTypeSiam {
+func (db *database) update(formName string, value interface{}) (uint64, error) {
+	if fm, exist := db.forms[formName]; exist && fm.FormType() == api.FormType_Siam {
 		return fm.Insert(value)
 	}
 	return 0, comm.ErrFormNotFoundOrSupport
 }
 
-func (db *database) query(formID string, selectorBytes []byte) (int32, []interface{}, error) {
-	if fm, exist := db.forms[formID]; exist {
+func (db *database) query(formName string, selectorBytes []byte) (int32, []interface{}, error) {
+	if fm, exist := db.forms[formName]; exist {
 		return fm.Select(selectorBytes)
 	}
 	return 0, nil, comm.ErrFormNotFoundOrSupport
 }
 
-func (db *database) delete(formID string, selectorBytes []byte) (int32, error) {
-	if fm, exist := db.forms[formID]; exist {
+func (db *database) delete(formName string, selectorBytes []byte) (int32, error) {
+	if fm, exist := db.forms[formName]; exist {
 		return fm.Delete(selectorBytes)
 	}
 	return 0, comm.ErrFormNotFoundOrSupport
+}
+
+// name2ID 确保表唯一ID不重复
+func (db *database) name2ID(name string) string {
+	id := gnomon.HashMD516(name)
+	have := true
+	for have {
+		have = false
+		for _, v := range db.forms {
+			if v.ID() == id {
+				have = true
+				id = gnomon.HashMD516(strings.Join([]string{id, gnomon.StringRandSeq(3)}, ""))
+				break
+			}
+		}
+	}
+	return id
 }

@@ -380,65 +380,6 @@ func (m *ReqCreateDatabase) GetComment() string {
 	return ""
 }
 
-// RespDatabase 响应新建数据库
-type RespDatabase struct {
-	// Code 响应结果码
-	Code Code `protobuf:"varint,1,opt,name=Code,proto3,enum=api.Code" json:"Code,omitempty"`
-	// database 数据库对象
-	Database *Database `protobuf:"bytes,2,opt,name=Database,proto3" json:"Database,omitempty"`
-	// ErrMsg 错误信息
-	ErrMsg               string   `protobuf:"bytes,3,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RespDatabase) Reset()         { *m = RespDatabase{} }
-func (m *RespDatabase) String() string { return proto.CompactTextString(m) }
-func (*RespDatabase) ProtoMessage()    {}
-func (*RespDatabase) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{7}
-}
-
-func (m *RespDatabase) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RespDatabase.Unmarshal(m, b)
-}
-func (m *RespDatabase) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RespDatabase.Marshal(b, m, deterministic)
-}
-func (m *RespDatabase) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RespDatabase.Merge(m, src)
-}
-func (m *RespDatabase) XXX_Size() int {
-	return xxx_messageInfo_RespDatabase.Size(m)
-}
-func (m *RespDatabase) XXX_DiscardUnknown() {
-	xxx_messageInfo_RespDatabase.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RespDatabase proto.InternalMessageInfo
-
-func (m *RespDatabase) GetCode() Code {
-	if m != nil {
-		return m.Code
-	}
-	return Code_Success
-}
-
-func (m *RespDatabase) GetDatabase() *Database {
-	if m != nil {
-		return m.Database
-	}
-	return nil
-}
-
-func (m *RespDatabase) GetErrMsg() string {
-	if m != nil {
-		return m.ErrMsg
-	}
-	return ""
-}
-
 // ReqCreateForm 请求创建表
 type ReqCreateForm struct {
 	// DatabaseName 数据库名称
@@ -458,7 +399,7 @@ func (m *ReqCreateForm) Reset()         { *m = ReqCreateForm{} }
 func (m *ReqCreateForm) String() string { return proto.CompactTextString(m) }
 func (*ReqCreateForm) ProtoMessage()    {}
 func (*ReqCreateForm) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{8}
+	return fileDescriptor_674682bf8ffb71fc, []int{7}
 }
 
 func (m *ReqCreateForm) XXX_Unmarshal(b []byte) error {
@@ -504,7 +445,7 @@ func (m *ReqCreateForm) GetFormType() FormType {
 	if m != nil {
 		return m.FormType
 	}
-	return FormType_SQL
+	return FormType_Siam
 }
 
 // ReqKey 请求新建主键
@@ -524,7 +465,7 @@ func (m *ReqCreateKey) Reset()         { *m = ReqCreateKey{} }
 func (m *ReqCreateKey) String() string { return proto.CompactTextString(m) }
 func (*ReqCreateKey) ProtoMessage()    {}
 func (*ReqCreateKey) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{9}
+	return fileDescriptor_674682bf8ffb71fc, []int{8}
 }
 
 func (m *ReqCreateKey) XXX_Unmarshal(b []byte) error {
@@ -583,7 +524,7 @@ func (m *ReqCreateIndex) Reset()         { *m = ReqCreateIndex{} }
 func (m *ReqCreateIndex) String() string { return proto.CompactTextString(m) }
 func (*ReqCreateIndex) ProtoMessage()    {}
 func (*ReqCreateIndex) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{10}
+	return fileDescriptor_674682bf8ffb71fc, []int{9}
 }
 
 func (m *ReqCreateIndex) XXX_Unmarshal(b []byte) error {
@@ -625,324 +566,6 @@ func (m *ReqCreateIndex) GetKeyStructure() string {
 	return ""
 }
 
-// ReqPutD 新增数据
-type ReqPutD struct {
-	// Key 数据库名称
-	Key string `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key,omitempty"`
-	// Value 插入数据对象
-	Value                []byte   `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ReqPutD) Reset()         { *m = ReqPutD{} }
-func (m *ReqPutD) String() string { return proto.CompactTextString(m) }
-func (*ReqPutD) ProtoMessage()    {}
-func (*ReqPutD) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{11}
-}
-
-func (m *ReqPutD) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReqPutD.Unmarshal(m, b)
-}
-func (m *ReqPutD) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReqPutD.Marshal(b, m, deterministic)
-}
-func (m *ReqPutD) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReqPutD.Merge(m, src)
-}
-func (m *ReqPutD) XXX_Size() int {
-	return xxx_messageInfo_ReqPutD.Size(m)
-}
-func (m *ReqPutD) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReqPutD.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReqPutD proto.InternalMessageInfo
-
-func (m *ReqPutD) GetKey() string {
-	if m != nil {
-		return m.Key
-	}
-	return ""
-}
-
-func (m *ReqPutD) GetValue() []byte {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-// RespPutD 响应新增数据
-type RespPutD struct {
-	// Code 响应结果码
-	Code Code `protobuf:"varint,1,opt,name=Code,proto3,enum=api.Code" json:"Code,omitempty"`
-	// HashKey HashKey
-	HashKey uint64 `protobuf:"varint,2,opt,name=HashKey,proto3" json:"HashKey,omitempty"`
-	// ErrMsg 错误信息
-	ErrMsg               string   `protobuf:"bytes,3,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RespPutD) Reset()         { *m = RespPutD{} }
-func (m *RespPutD) String() string { return proto.CompactTextString(m) }
-func (*RespPutD) ProtoMessage()    {}
-func (*RespPutD) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{12}
-}
-
-func (m *RespPutD) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RespPutD.Unmarshal(m, b)
-}
-func (m *RespPutD) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RespPutD.Marshal(b, m, deterministic)
-}
-func (m *RespPutD) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RespPutD.Merge(m, src)
-}
-func (m *RespPutD) XXX_Size() int {
-	return xxx_messageInfo_RespPutD.Size(m)
-}
-func (m *RespPutD) XXX_DiscardUnknown() {
-	xxx_messageInfo_RespPutD.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RespPutD proto.InternalMessageInfo
-
-func (m *RespPutD) GetCode() Code {
-	if m != nil {
-		return m.Code
-	}
-	return Code_Success
-}
-
-func (m *RespPutD) GetHashKey() uint64 {
-	if m != nil {
-		return m.HashKey
-	}
-	return 0
-}
-
-func (m *RespPutD) GetErrMsg() string {
-	if m != nil {
-		return m.ErrMsg
-	}
-	return ""
-}
-
-// ReqSetD 新增数据
-type ReqSetD struct {
-	// Key 数据库名称
-	Key string `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key,omitempty"`
-	// Value 插入数据对象
-	Value                []byte   `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ReqSetD) Reset()         { *m = ReqSetD{} }
-func (m *ReqSetD) String() string { return proto.CompactTextString(m) }
-func (*ReqSetD) ProtoMessage()    {}
-func (*ReqSetD) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{13}
-}
-
-func (m *ReqSetD) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReqSetD.Unmarshal(m, b)
-}
-func (m *ReqSetD) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReqSetD.Marshal(b, m, deterministic)
-}
-func (m *ReqSetD) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReqSetD.Merge(m, src)
-}
-func (m *ReqSetD) XXX_Size() int {
-	return xxx_messageInfo_ReqSetD.Size(m)
-}
-func (m *ReqSetD) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReqSetD.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReqSetD proto.InternalMessageInfo
-
-func (m *ReqSetD) GetKey() string {
-	if m != nil {
-		return m.Key
-	}
-	return ""
-}
-
-func (m *ReqSetD) GetValue() []byte {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-// RespSetD 响应新增数据
-type RespSetD struct {
-	// Code 响应结果码
-	Code Code `protobuf:"varint,1,opt,name=Code,proto3,enum=api.Code" json:"Code,omitempty"`
-	// HashKey HashKey
-	HashKey uint64 `protobuf:"varint,2,opt,name=HashKey,proto3" json:"HashKey,omitempty"`
-	// ErrMsg 错误信息
-	ErrMsg               string   `protobuf:"bytes,3,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RespSetD) Reset()         { *m = RespSetD{} }
-func (m *RespSetD) String() string { return proto.CompactTextString(m) }
-func (*RespSetD) ProtoMessage()    {}
-func (*RespSetD) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{14}
-}
-
-func (m *RespSetD) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RespSetD.Unmarshal(m, b)
-}
-func (m *RespSetD) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RespSetD.Marshal(b, m, deterministic)
-}
-func (m *RespSetD) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RespSetD.Merge(m, src)
-}
-func (m *RespSetD) XXX_Size() int {
-	return xxx_messageInfo_RespSetD.Size(m)
-}
-func (m *RespSetD) XXX_DiscardUnknown() {
-	xxx_messageInfo_RespSetD.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RespSetD proto.InternalMessageInfo
-
-func (m *RespSetD) GetCode() Code {
-	if m != nil {
-		return m.Code
-	}
-	return Code_Success
-}
-
-func (m *RespSetD) GetHashKey() uint64 {
-	if m != nil {
-		return m.HashKey
-	}
-	return 0
-}
-
-func (m *RespSetD) GetErrMsg() string {
-	if m != nil {
-		return m.ErrMsg
-	}
-	return ""
-}
-
-// ReqGetD 获取数据
-type ReqGetD struct {
-	// Key 数据库名称
-	Key                  string   `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ReqGetD) Reset()         { *m = ReqGetD{} }
-func (m *ReqGetD) String() string { return proto.CompactTextString(m) }
-func (*ReqGetD) ProtoMessage()    {}
-func (*ReqGetD) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{15}
-}
-
-func (m *ReqGetD) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReqGetD.Unmarshal(m, b)
-}
-func (m *ReqGetD) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReqGetD.Marshal(b, m, deterministic)
-}
-func (m *ReqGetD) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReqGetD.Merge(m, src)
-}
-func (m *ReqGetD) XXX_Size() int {
-	return xxx_messageInfo_ReqGetD.Size(m)
-}
-func (m *ReqGetD) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReqGetD.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReqGetD proto.InternalMessageInfo
-
-func (m *ReqGetD) GetKey() string {
-	if m != nil {
-		return m.Key
-	}
-	return ""
-}
-
-// RespGetD 响应获取数据
-type RespGetD struct {
-	// Code 响应结果码
-	Code Code `protobuf:"varint,1,opt,name=Code,proto3,enum=api.Code" json:"Code,omitempty"`
-	// Value Value
-	Value []byte `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
-	// ErrMsg 错误信息
-	ErrMsg               string   `protobuf:"bytes,3,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RespGetD) Reset()         { *m = RespGetD{} }
-func (m *RespGetD) String() string { return proto.CompactTextString(m) }
-func (*RespGetD) ProtoMessage()    {}
-func (*RespGetD) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{16}
-}
-
-func (m *RespGetD) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RespGetD.Unmarshal(m, b)
-}
-func (m *RespGetD) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RespGetD.Marshal(b, m, deterministic)
-}
-func (m *RespGetD) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RespGetD.Merge(m, src)
-}
-func (m *RespGetD) XXX_Size() int {
-	return xxx_messageInfo_RespGetD.Size(m)
-}
-func (m *RespGetD) XXX_DiscardUnknown() {
-	xxx_messageInfo_RespGetD.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RespGetD proto.InternalMessageInfo
-
-func (m *RespGetD) GetCode() Code {
-	if m != nil {
-		return m.Code
-	}
-	return Code_Success
-}
-
-func (m *RespGetD) GetValue() []byte {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-func (m *RespGetD) GetErrMsg() string {
-	if m != nil {
-		return m.ErrMsg
-	}
-	return ""
-}
-
 // ReqPut 新增数据
 type ReqPut struct {
 	// DatabaseName 数据库名称
@@ -962,7 +585,7 @@ func (m *ReqPut) Reset()         { *m = ReqPut{} }
 func (m *ReqPut) String() string { return proto.CompactTextString(m) }
 func (*ReqPut) ProtoMessage()    {}
 func (*ReqPut) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{17}
+	return fileDescriptor_674682bf8ffb71fc, []int{10}
 }
 
 func (m *ReqPut) XXX_Unmarshal(b []byte) error {
@@ -1028,7 +651,7 @@ func (m *RespPut) Reset()         { *m = RespPut{} }
 func (m *RespPut) String() string { return proto.CompactTextString(m) }
 func (*RespPut) ProtoMessage()    {}
 func (*RespPut) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{18}
+	return fileDescriptor_674682bf8ffb71fc, []int{11}
 }
 
 func (m *RespPut) XXX_Unmarshal(b []byte) error {
@@ -1089,7 +712,7 @@ func (m *ReqSet) Reset()         { *m = ReqSet{} }
 func (m *ReqSet) String() string { return proto.CompactTextString(m) }
 func (*ReqSet) ProtoMessage()    {}
 func (*ReqSet) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{19}
+	return fileDescriptor_674682bf8ffb71fc, []int{12}
 }
 
 func (m *ReqSet) XXX_Unmarshal(b []byte) error {
@@ -1155,7 +778,7 @@ func (m *RespSet) Reset()         { *m = RespSet{} }
 func (m *RespSet) String() string { return proto.CompactTextString(m) }
 func (*RespSet) ProtoMessage()    {}
 func (*RespSet) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{20}
+	return fileDescriptor_674682bf8ffb71fc, []int{13}
 }
 
 func (m *RespSet) XXX_Unmarshal(b []byte) error {
@@ -1214,7 +837,7 @@ func (m *ReqGet) Reset()         { *m = ReqGet{} }
 func (m *ReqGet) String() string { return proto.CompactTextString(m) }
 func (*ReqGet) ProtoMessage()    {}
 func (*ReqGet) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{21}
+	return fileDescriptor_674682bf8ffb71fc, []int{14}
 }
 
 func (m *ReqGet) XXX_Unmarshal(b []byte) error {
@@ -1273,7 +896,7 @@ func (m *RespGet) Reset()         { *m = RespGet{} }
 func (m *RespGet) String() string { return proto.CompactTextString(m) }
 func (*RespGet) ProtoMessage()    {}
 func (*RespGet) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{22}
+	return fileDescriptor_674682bf8ffb71fc, []int{15}
 }
 
 func (m *RespGet) XXX_Unmarshal(b []byte) error {
@@ -1315,6 +938,133 @@ func (m *RespGet) GetErrMsg() string {
 	return ""
 }
 
+// ReqInsert 新增数据
+type ReqInsert struct {
+	// DatabaseName 数据库名称
+	DatabaseName string `protobuf:"bytes,1,opt,name=DatabaseName,proto3" json:"DatabaseName,omitempty"`
+	// FormName 表名称
+	FormName string `protobuf:"bytes,2,opt,name=FormName,proto3" json:"FormName,omitempty"`
+	// Key 数据库名称
+	Key string `protobuf:"bytes,3,opt,name=Key,proto3" json:"Key,omitempty"`
+	// Value 插入数据对象
+	Value                []byte   `protobuf:"bytes,4,opt,name=Value,proto3" json:"Value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReqInsert) Reset()         { *m = ReqInsert{} }
+func (m *ReqInsert) String() string { return proto.CompactTextString(m) }
+func (*ReqInsert) ProtoMessage()    {}
+func (*ReqInsert) Descriptor() ([]byte, []int) {
+	return fileDescriptor_674682bf8ffb71fc, []int{16}
+}
+
+func (m *ReqInsert) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReqInsert.Unmarshal(m, b)
+}
+func (m *ReqInsert) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReqInsert.Marshal(b, m, deterministic)
+}
+func (m *ReqInsert) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReqInsert.Merge(m, src)
+}
+func (m *ReqInsert) XXX_Size() int {
+	return xxx_messageInfo_ReqInsert.Size(m)
+}
+func (m *ReqInsert) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReqInsert.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReqInsert proto.InternalMessageInfo
+
+func (m *ReqInsert) GetDatabaseName() string {
+	if m != nil {
+		return m.DatabaseName
+	}
+	return ""
+}
+
+func (m *ReqInsert) GetFormName() string {
+	if m != nil {
+		return m.FormName
+	}
+	return ""
+}
+
+func (m *ReqInsert) GetKey() string {
+	if m != nil {
+		return m.Key
+	}
+	return ""
+}
+
+func (m *ReqInsert) GetValue() []byte {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+// RespInsert 响应新增数据
+type RespInsert struct {
+	// Code 响应结果码
+	Code Code `protobuf:"varint,1,opt,name=Code,proto3,enum=api.Code" json:"Code,omitempty"`
+	// HashKey HashKey
+	HashKey uint64 `protobuf:"varint,2,opt,name=HashKey,proto3" json:"HashKey,omitempty"`
+	// ErrMsg 错误信息
+	ErrMsg               string   `protobuf:"bytes,3,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RespInsert) Reset()         { *m = RespInsert{} }
+func (m *RespInsert) String() string { return proto.CompactTextString(m) }
+func (*RespInsert) ProtoMessage()    {}
+func (*RespInsert) Descriptor() ([]byte, []int) {
+	return fileDescriptor_674682bf8ffb71fc, []int{17}
+}
+
+func (m *RespInsert) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RespInsert.Unmarshal(m, b)
+}
+func (m *RespInsert) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RespInsert.Marshal(b, m, deterministic)
+}
+func (m *RespInsert) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RespInsert.Merge(m, src)
+}
+func (m *RespInsert) XXX_Size() int {
+	return xxx_messageInfo_RespInsert.Size(m)
+}
+func (m *RespInsert) XXX_DiscardUnknown() {
+	xxx_messageInfo_RespInsert.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RespInsert proto.InternalMessageInfo
+
+func (m *RespInsert) GetCode() Code {
+	if m != nil {
+		return m.Code
+	}
+	return Code_Success
+}
+
+func (m *RespInsert) GetHashKey() uint64 {
+	if m != nil {
+		return m.HashKey
+	}
+	return 0
+}
+
+func (m *RespInsert) GetErrMsg() string {
+	if m != nil {
+		return m.ErrMsg
+	}
+	return ""
+}
+
 // ReqSelect 获取数据
 type ReqSelect struct {
 	// DatabaseName 数据库名称
@@ -1332,7 +1082,7 @@ func (m *ReqSelect) Reset()         { *m = ReqSelect{} }
 func (m *ReqSelect) String() string { return proto.CompactTextString(m) }
 func (*ReqSelect) ProtoMessage()    {}
 func (*ReqSelect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{23}
+	return fileDescriptor_674682bf8ffb71fc, []int{18}
 }
 
 func (m *ReqSelect) XXX_Unmarshal(b []byte) error {
@@ -1393,7 +1143,7 @@ func (m *RespSelect) Reset()         { *m = RespSelect{} }
 func (m *RespSelect) String() string { return proto.CompactTextString(m) }
 func (*RespSelect) ProtoMessage()    {}
 func (*RespSelect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{24}
+	return fileDescriptor_674682bf8ffb71fc, []int{19}
 }
 
 func (m *RespSelect) XXX_Unmarshal(b []byte) error {
@@ -1459,7 +1209,7 @@ func (m *ReqRemove) Reset()         { *m = ReqRemove{} }
 func (m *ReqRemove) String() string { return proto.CompactTextString(m) }
 func (*ReqRemove) ProtoMessage()    {}
 func (*ReqRemove) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{25}
+	return fileDescriptor_674682bf8ffb71fc, []int{20}
 }
 
 func (m *ReqRemove) XXX_Unmarshal(b []byte) error {
@@ -1518,7 +1268,7 @@ func (m *ReqDelete) Reset()         { *m = ReqDelete{} }
 func (m *ReqDelete) String() string { return proto.CompactTextString(m) }
 func (*ReqDelete) ProtoMessage()    {}
 func (*ReqDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{26}
+	return fileDescriptor_674682bf8ffb71fc, []int{21}
 }
 
 func (m *ReqDelete) XXX_Unmarshal(b []byte) error {
@@ -1577,7 +1327,7 @@ func (m *RespDelete) Reset()         { *m = RespDelete{} }
 func (m *RespDelete) String() string { return proto.CompactTextString(m) }
 func (*RespDelete) ProtoMessage()    {}
 func (*RespDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{27}
+	return fileDescriptor_674682bf8ffb71fc, []int{22}
 }
 
 func (m *RespDelete) XXX_Unmarshal(b []byte) error {
@@ -1634,7 +1384,7 @@ func (m *Resp) Reset()         { *m = Resp{} }
 func (m *Resp) String() string { return proto.CompactTextString(m) }
 func (*Resp) ProtoMessage()    {}
 func (*Resp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674682bf8ffb71fc, []int{28}
+	return fileDescriptor_674682bf8ffb71fc, []int{23}
 }
 
 func (m *Resp) XXX_Unmarshal(b []byte) error {
@@ -1678,22 +1428,17 @@ func init() {
 	proto.RegisterType((*ReqForms)(nil), "api.ReqForms")
 	proto.RegisterType((*RespForms)(nil), "api.RespForms")
 	proto.RegisterType((*ReqCreateDatabase)(nil), "api.ReqCreateDatabase")
-	proto.RegisterType((*RespDatabase)(nil), "api.RespDatabase")
 	proto.RegisterType((*ReqCreateForm)(nil), "api.ReqCreateForm")
 	proto.RegisterType((*ReqCreateKey)(nil), "api.ReqCreateKey")
 	proto.RegisterType((*ReqCreateIndex)(nil), "api.ReqCreateIndex")
-	proto.RegisterType((*ReqPutD)(nil), "api.ReqPutD")
-	proto.RegisterType((*RespPutD)(nil), "api.RespPutD")
-	proto.RegisterType((*ReqSetD)(nil), "api.ReqSetD")
-	proto.RegisterType((*RespSetD)(nil), "api.RespSetD")
-	proto.RegisterType((*ReqGetD)(nil), "api.ReqGetD")
-	proto.RegisterType((*RespGetD)(nil), "api.RespGetD")
 	proto.RegisterType((*ReqPut)(nil), "api.ReqPut")
 	proto.RegisterType((*RespPut)(nil), "api.RespPut")
 	proto.RegisterType((*ReqSet)(nil), "api.ReqSet")
 	proto.RegisterType((*RespSet)(nil), "api.RespSet")
 	proto.RegisterType((*ReqGet)(nil), "api.ReqGet")
 	proto.RegisterType((*RespGet)(nil), "api.RespGet")
+	proto.RegisterType((*ReqInsert)(nil), "api.ReqInsert")
+	proto.RegisterType((*RespInsert)(nil), "api.RespInsert")
 	proto.RegisterType((*ReqSelect)(nil), "api.ReqSelect")
 	proto.RegisterType((*RespSelect)(nil), "api.RespSelect")
 	proto.RegisterType((*ReqRemove)(nil), "api.ReqRemove")
@@ -1705,48 +1450,45 @@ func init() {
 func init() { proto.RegisterFile("connector/grpc/rs.proto", fileDescriptor_674682bf8ffb71fc) }
 
 var fileDescriptor_674682bf8ffb71fc = []byte{
-	// 674 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x56, 0xdf, 0x4f, 0xdb, 0x3e,
-	0x10, 0xff, 0xb6, 0x09, 0xb4, 0xb9, 0x02, 0xe2, 0x1b, 0x4d, 0x5b, 0x06, 0x9a, 0xa8, 0xfc, 0x54,
-	0x98, 0x14, 0x34, 0xf6, 0xbc, 0x87, 0x51, 0x46, 0x37, 0xa1, 0x4d, 0xc8, 0x9d, 0x98, 0xc6, 0xb4,
-	0x07, 0x37, 0x3d, 0x58, 0xa5, 0x36, 0x4e, 0x9d, 0x14, 0xad, 0xff, 0xc3, 0xfe, 0xe8, 0xe9, 0xec,
-	0x24, 0x6d, 0x51, 0xa3, 0xc0, 0x80, 0xbe, 0xd9, 0x77, 0xbe, 0xfb, 0xfc, 0x38, 0xb7, 0x31, 0xbc,
-	0x08, 0x64, 0x18, 0x62, 0x90, 0x48, 0x75, 0x78, 0xad, 0xa2, 0xe0, 0x50, 0xc5, 0x7e, 0xa4, 0x64,
-	0x22, 0x5d, 0x4b, 0x44, 0x83, 0x9d, 0x97, 0xb7, 0xb2, 0x7d, 0x91, 0x08, 0x93, 0xdf, 0xd9, 0xbd,
-	0x95, 0x0a, 0x64, 0x78, 0x35, 0xb8, 0x36, 0x49, 0xe6, 0x40, 0x8d, 0xe3, 0xb8, 0x2d, 0xc3, 0x2b,
-	0xd6, 0x83, 0x3a, 0xc7, 0x38, 0xa2, 0xb5, 0xfb, 0x0a, 0xec, 0xb6, 0xec, 0xa3, 0x57, 0x69, 0x56,
-	0x5a, 0x5b, 0x47, 0x8e, 0x2f, 0xa2, 0x81, 0x4f, 0x01, 0xae, 0xc3, 0xee, 0x1e, 0xa5, 0xc3, 0x2b,
-	0xaf, 0xda, 0xac, 0xb4, 0x1a, 0x47, 0x8d, 0x34, 0x4d, 0x6d, 0xb9, 0x4e, 0xb8, 0xcf, 0x61, 0xfd,
-	0x83, 0x52, 0x9f, 0xe3, 0x6b, 0xcf, 0x6a, 0x56, 0x5a, 0x0e, 0x4f, 0x77, 0x6c, 0x0b, 0x36, 0x38,
-	0x8e, 0x4f, 0x44, 0x22, 0x7a, 0x22, 0xc6, 0x98, 0xc5, 0xb0, 0x49, 0x98, 0x79, 0xa0, 0x0c, 0xf8,
-	0x35, 0x38, 0xf9, 0x59, 0xaf, 0xda, 0xb4, 0x5a, 0x8d, 0xa3, 0x4d, 0x7d, 0x26, 0x8b, 0xf2, 0x59,
-	0xbe, 0x90, 0x84, 0x4f, 0x42, 0xc7, 0xa7, 0x52, 0x8d, 0x62, 0x97, 0xc1, 0x46, 0x56, 0xf0, 0x45,
-	0x8c, 0x0c, 0xae, 0xc3, 0x17, 0x62, 0x2c, 0x00, 0x87, 0x48, 0x9a, 0x82, 0x52, 0x67, 0xd6, 0xf4,
-	0xb9, 0x94, 0x9c, 0xc9, 0x53, 0x84, 0x9b, 0x78, 0x21, 0xa9, 0xf7, 0xf0, 0x3f, 0x0d, 0x42, 0xa1,
-	0x48, 0x30, 0x43, 0x77, 0x5d, 0xb0, 0xe7, 0x58, 0xe9, 0xb5, 0xeb, 0x41, 0xad, 0x2d, 0x47, 0x23,
-	0x0c, 0x13, 0x6d, 0xbf, 0xc3, 0xb3, 0x2d, 0x8b, 0xc8, 0xdc, 0x99, 0x99, 0x65, 0x54, 0xf7, 0xa1,
-	0x9e, 0x1d, 0x4d, 0x07, 0x79, 0xcb, 0xca, 0x3c, 0x5d, 0x48, 0xfa, 0x4f, 0x85, 0xe6, 0x97, 0xb2,
-	0x26, 0x7d, 0x77, 0xf1, 0x33, 0x57, 0x55, 0x5d, 0xae, 0xca, 0x5a, 0x50, 0x45, 0x34, 0xa9, 0xf3,
-	0xd7, 0x69, 0x84, 0x9e, 0xad, 0x95, 0x6c, 0xe6, 0xa6, 0x52, 0x90, 0xe7, 0x69, 0xa6, 0xf4, 0xed,
-	0x32, 0x6c, 0xce, 0x70, 0x7a, 0x27, 0x32, 0x3b, 0xa6, 0xfd, 0x1c, 0xa1, 0x7c, 0x4f, 0xf5, 0x67,
-	0x38, 0xed, 0x26, 0x6a, 0x12, 0x24, 0x13, 0x85, 0x29, 0xb3, 0x85, 0x18, 0x4b, 0x60, 0x2b, 0xc7,
-	0xfc, 0x14, 0xf6, 0xf1, 0xf7, 0x4a, 0x50, 0xdf, 0xe8, 0x9f, 0xed, 0xf9, 0x24, 0x39, 0x71, 0xb7,
-	0xc1, 0x3a, 0xc3, 0x69, 0x8a, 0x42, 0x4b, 0xf7, 0x19, 0xac, 0x5d, 0x88, 0xe1, 0xc4, 0x74, 0xde,
-	0xe0, 0x66, 0xc3, 0x7e, 0x98, 0x9f, 0xb7, 0xae, 0x29, 0xb9, 0x19, 0x1e, 0xd4, 0x3e, 0x8a, 0xf8,
-	0x17, 0xb5, 0xa5, 0x16, 0x36, 0xcf, 0xb6, 0x85, 0x17, 0xc1, 0xf0, 0xe9, 0xe2, 0xfd, 0xf9, 0xe8,
-	0x9a, 0x47, 0xe7, 0xb3, 0xab, 0xf9, 0x74, 0x96, 0xf2, 0x61, 0xdf, 0x0c, 0x72, 0xe7, 0x0e, 0xc8,
-	0x4b, 0xa9, 0x17, 0xa2, 0x46, 0xb0, 0x6e, 0xa6, 0xf2, 0xe0, 0x3b, 0x90, 0x92, 0xb6, 0x96, 0x98,
-	0x68, 0xcf, 0x9b, 0x78, 0x49, 0x3a, 0xf5, 0x50, 0x1f, 0xdf, 0x43, 0xa3, 0xa6, 0x8b, 0x2b, 0x57,
-	0x43, 0x90, 0x8f, 0xae, 0xe6, 0x52, 0xab, 0xe9, 0x3c, 0x85, 0x1a, 0x76, 0x61, 0x78, 0x77, 0xca,
-	0x79, 0xdf, 0xef, 0x3e, 0xdd, 0xd0, 0x87, 0x67, 0xdc, 0xc5, 0x21, 0x06, 0x0f, 0xa7, 0xbd, 0x0f,
-	0x75, 0xd3, 0x49, 0x2a, 0x0d, 0x93, 0xfd, 0xdd, 0x67, 0x41, 0x9e, 0xa7, 0x99, 0x04, 0x30, 0x73,
-	0xd0, 0xc0, 0xe5, 0x92, 0xda, 0x72, 0x92, 0x7e, 0x8d, 0xd6, 0xb8, 0xd9, 0xcc, 0x84, 0x5a, 0xcb,
-	0x85, 0xda, 0x0b, 0x42, 0x7f, 0x6a, 0xa1, 0x1c, 0x47, 0xf2, 0x06, 0x9f, 0x60, 0x3e, 0xc6, 0xc7,
-	0x13, 0x1c, 0x62, 0x82, 0xab, 0xf4, 0xf1, 0xbb, 0xf1, 0x31, 0x05, 0xfe, 0x27, 0x1f, 0x8b, 0xae,
-	0xc6, 0x3b, 0xb0, 0xa9, 0x75, 0x59, 0xd3, 0x59, 0x79, 0x75, 0xbe, 0xfc, 0x20, 0x2d, 0x73, 0x1b,
-	0x50, 0xeb, 0x4e, 0x82, 0x00, 0xe3, 0x78, 0xfb, 0x3f, 0xb7, 0x0e, 0xf6, 0xa9, 0x18, 0x0c, 0xb7,
-	0x2b, 0xc7, 0x07, 0xb0, 0x17, 0x84, 0xbe, 0xe8, 0xa1, 0x1a, 0x04, 0xfe, 0x70, 0x30, 0x9c, 0xf6,
-	0x7b, 0x7e, 0xfe, 0x8a, 0xf4, 0xe9, 0x15, 0x79, 0x5c, 0xe3, 0xdd, 0x73, 0x7a, 0x41, 0xf6, 0xd6,
-	0xf5, 0x43, 0xf2, 0xed, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x9e, 0xf3, 0xeb, 0x9a, 0xa0, 0x0a,
-	0x00, 0x00,
+	// 628 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x56, 0x41, 0x4f, 0xdb, 0x4c,
+	0x10, 0xfd, 0x92, 0x18, 0x12, 0x4f, 0x00, 0xf1, 0xad, 0xaa, 0xd6, 0xa5, 0xaa, 0x88, 0xf6, 0x14,
+	0xa8, 0x64, 0x24, 0x7a, 0xee, 0xa1, 0x84, 0x42, 0x11, 0x6a, 0x85, 0x36, 0x15, 0x52, 0x91, 0x38,
+	0x6c, 0x9c, 0x81, 0x46, 0x4a, 0xbc, 0xce, 0xae, 0x83, 0x9a, 0xff, 0xd0, 0x1f, 0x5d, 0xcd, 0xae,
+	0xed, 0x24, 0x88, 0xc8, 0xa8, 0x40, 0x6e, 0x9e, 0x79, 0x9e, 0x79, 0xef, 0xcd, 0x6c, 0x9c, 0x85,
+	0x37, 0x91, 0x8a, 0x63, 0x8c, 0x52, 0xa5, 0x0f, 0x6e, 0x75, 0x12, 0x1d, 0x68, 0x13, 0x26, 0x5a,
+	0xa5, 0x8a, 0xd5, 0x64, 0x32, 0xd8, 0x79, 0x7b, 0x0f, 0xed, 0xcb, 0x54, 0x3a, 0x7c, 0xe7, 0xdd,
+	0x3d, 0x28, 0x52, 0xf1, 0xcd, 0xe0, 0xd6, 0x81, 0xdc, 0x87, 0xba, 0xc0, 0x71, 0x47, 0xc5, 0x37,
+	0xbc, 0x07, 0x0d, 0x81, 0x26, 0xa1, 0x67, 0xf6, 0x1e, 0xbc, 0x8e, 0xea, 0x63, 0x50, 0x69, 0x55,
+	0xda, 0x5b, 0x87, 0x7e, 0x28, 0x93, 0x41, 0x48, 0x09, 0x61, 0xd3, 0x6c, 0x97, 0xe0, 0xf8, 0x26,
+	0xa8, 0xb6, 0x2a, 0xed, 0xe6, 0x61, 0x33, 0x83, 0xa9, 0xad, 0xb0, 0x00, 0x7b, 0x0d, 0xeb, 0x5f,
+	0xb4, 0xfe, 0x66, 0x6e, 0x83, 0x5a, 0xab, 0xd2, 0xf6, 0x45, 0x16, 0xf1, 0x2d, 0xd8, 0x10, 0x38,
+	0x3e, 0x96, 0xa9, 0xec, 0x49, 0x83, 0x86, 0x1b, 0xd8, 0x24, 0xce, 0x22, 0x51, 0x46, 0xfc, 0x01,
+	0xfc, 0xe2, 0xdd, 0xa0, 0xda, 0xaa, 0xb5, 0x9b, 0x87, 0x9b, 0xf6, 0x9d, 0x3c, 0x2b, 0x66, 0xf8,
+	0x52, 0x11, 0x21, 0x19, 0x1d, 0x9f, 0x28, 0x3d, 0x32, 0x8c, 0xc3, 0x46, 0x5e, 0xf0, 0x5d, 0x8e,
+	0x1c, 0xaf, 0x2f, 0x16, 0x72, 0x3c, 0x02, 0x9f, 0x44, 0xba, 0x82, 0xd2, 0xc9, 0xac, 0xd9, 0xf7,
+	0x32, 0x71, 0x0e, 0xa7, 0x8c, 0x70, 0xf9, 0xa5, 0xa2, 0x3e, 0xc3, 0xff, 0xb4, 0x08, 0x8d, 0x32,
+	0xc5, 0x9c, 0x9d, 0x31, 0xf0, 0xe6, 0x54, 0xd9, 0x67, 0x16, 0x40, 0xbd, 0xa3, 0x46, 0x23, 0x8c,
+	0x53, 0x3b, 0x7e, 0x5f, 0xe4, 0x21, 0xff, 0x53, 0xa1, 0x69, 0x66, 0x3d, 0x88, 0xed, 0x31, 0xee,
+	0x0a, 0x8e, 0xea, 0xc3, 0x1c, 0xb5, 0x05, 0x0e, 0xb6, 0x07, 0x0d, 0xea, 0xfc, 0x63, 0x9a, 0x60,
+	0xe0, 0xd9, 0x11, 0x6c, 0x16, 0x16, 0x29, 0x29, 0x0a, 0x98, 0x6b, 0xbb, 0x6b, 0xa7, 0xe6, 0x1c,
+	0xa7, 0x8f, 0x12, 0xb3, 0xe3, 0xda, 0xcf, 0x09, 0x2a, 0x62, 0xaa, 0x3f, 0xc7, 0x69, 0x37, 0xd5,
+	0x93, 0x28, 0x9d, 0x68, 0xcc, 0x94, 0x2d, 0xe4, 0x78, 0x0a, 0x5b, 0x05, 0xe7, 0x59, 0xdc, 0xc7,
+	0xdf, 0x2b, 0x61, 0x4d, 0x60, 0x5d, 0xe0, 0xf8, 0x62, 0x92, 0x3e, 0x99, 0x6d, 0x1b, 0x6a, 0xe7,
+	0x38, 0xcd, 0x48, 0xe8, 0x91, 0xbd, 0x82, 0xb5, 0x4b, 0x39, 0x9c, 0xb8, 0x69, 0x6f, 0x08, 0x17,
+	0xf0, 0x2b, 0xfa, 0xd9, 0x9a, 0x84, 0x28, 0x4b, 0x0e, 0x64, 0x00, 0xf5, 0xaf, 0xd2, 0xfc, 0xa2,
+	0xae, 0x44, 0xe6, 0x89, 0x3c, 0x5c, 0x7a, 0x12, 0x9d, 0x9b, 0x2e, 0xae, 0xdc, 0x0d, 0x51, 0x3e,
+	0xbb, 0x9b, 0x2b, 0xeb, 0xe6, 0xf4, 0x25, 0xdc, 0xf0, 0x4b, 0xa7, 0xfb, 0xb4, 0x5c, 0x77, 0xe1,
+	0xbb, 0x3a, 0xe7, 0x7b, 0xa9, 0x66, 0x43, 0x1f, 0x9c, 0xf1, 0x59, 0x6c, 0x50, 0xaf, 0x6e, 0x09,
+	0xd7, 0x00, 0x64, 0x26, 0x63, 0x7d, 0xf6, 0x3d, 0xdc, 0x59, 0x4f, 0x5d, 0x1c, 0x62, 0xf4, 0x74,
+	0x4f, 0x7b, 0xd0, 0x70, 0x9d, 0x94, 0xb6, 0x34, 0xf9, 0xbf, 0x40, 0x9e, 0x14, 0x05, 0xcc, 0x95,
+	0xb3, 0x95, 0x11, 0x97, 0xaf, 0xa9, 0xa3, 0x26, 0xd9, 0x97, 0x75, 0x4d, 0xb8, 0x60, 0x36, 0xaf,
+	0xda, 0xc3, 0xcb, 0xf3, 0x16, 0x8c, 0x5e, 0x5b, 0xa3, 0x02, 0x47, 0xea, 0x0e, 0x5f, 0xe0, 0xcc,
+	0xb9, 0x39, 0x1e, 0xe3, 0x10, 0x53, 0x5c, 0xe5, 0x1c, 0x7f, 0xba, 0x39, 0x66, 0xc4, 0xff, 0x34,
+	0xc7, 0x65, 0x47, 0xe3, 0x13, 0x78, 0xd4, 0xba, 0xac, 0xe9, 0xac, 0xbc, 0x3a, 0x5f, 0xbe, 0x9f,
+	0x95, 0xb1, 0x26, 0xd4, 0xbb, 0x93, 0x28, 0x42, 0x63, 0xb6, 0xff, 0x63, 0x0d, 0xf0, 0x4e, 0xe4,
+	0x60, 0xb8, 0x5d, 0x39, 0xda, 0x87, 0xdd, 0x28, 0x0e, 0x65, 0x0f, 0xf5, 0x20, 0x0a, 0x87, 0x83,
+	0xe1, 0xb4, 0xdf, 0x0b, 0x8b, 0x1b, 0x51, 0x48, 0x37, 0xa2, 0xa3, 0xba, 0xe8, 0x5e, 0xd0, 0x6d,
+	0xa8, 0xb7, 0x6e, 0x2f, 0x45, 0x1f, 0xff, 0x06, 0x00, 0x00, 0xff, 0xff, 0x12, 0x9d, 0xd9, 0x0c,
+	0x6c, 0x09, 0x00, 0x00,
 }
