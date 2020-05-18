@@ -30,19 +30,19 @@ import (
 )
 
 var (
-	errSQLSyntax                   = customErr("sql syntax error")
-	errSQLDatabaseIsNil            = customErr("database is nil, you should use database first")
+	//errSQLSyntax                   = customErr("sql syntax error")
+	//errSQLDatabaseIsNil            = customErr("database is nil, you should use database first")
 	errSQLSyntaxParamsCountInvalid = syntaxErr("params count is invalid")
 )
 
-func customErr(errStr string) error {
-	return errors.New(errStr)
-}
+//func customErr(errStr string) error {
+//	return errors.New(errStr)
+//}
 
 func syntaxErr(errStr string) error {
 	return errors.New(strings.Join([]string{"sql syntax error", errStr}, ": "))
 }
 
-func executeErr(errStr string) error {
-	return errors.New(strings.Join([]string{"sql execute error", errStr}, ": "))
-}
+//func executeErr(errStr string) error {
+//	return errors.New(strings.Join([]string{"sql execute error", errStr}, ": "))
+//}

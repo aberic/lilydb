@@ -30,10 +30,11 @@ import (
 )
 
 type jobGroup struct {
-	pool            *Pool       // 连接池对象
-	stabilizeJobs   []*job      // 固定工作组
-	instabilityJobs []*job      // 动态工作组
-	scheduled       *time.Timer // 定时检测任务
+	pool            *Pool         // 连接池对象
+	stabilizeJobs   []*job        // 固定工作组
+	instabilityJobs []*job        // 动态工作组
+	scheduled       *time.Timer   // 定时检测任务
+	stop            chan struct{} // 释放当前角色chan
 	once            sync.Once
 	mu              sync.Mutex
 }
@@ -97,6 +98,8 @@ func (jg *jobGroup) check() {
 				}
 			}
 			jg.scheduled.Reset(jg.pool.options.expiryDuration)
+		case <-jg.stop:
+			return
 		}
 	}
 }

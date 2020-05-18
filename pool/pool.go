@@ -36,7 +36,6 @@ type Pool struct {
 	jobGroup    *jobGroup      // 工作组
 	active      int32          // 正在活跃的连接数量
 	idle        int32          // 空闲中的连接数量
-	blockingNum int            // blockingNum 已Submit的数量
 	infinite    bool           // 表示该池是否为无限容量
 	options     *Options       // 参数配置
 	jobsChannel chan task      // 协程池内部的任务就绪队列

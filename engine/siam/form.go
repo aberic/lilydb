@@ -108,6 +108,7 @@ func (f *Form) FormType() api.FormType {
 	return f.formType
 }
 
+// Indexes 获取索引api集合
 func (f *Form) Indexes() map[string]*api.Index {
 	var idx = make(map[string]*api.Index)
 	for _, i := range f.indexes {

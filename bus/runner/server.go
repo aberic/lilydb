@@ -39,22 +39,22 @@ type APIServer struct {
 }
 
 // GetConf 获取数据库引擎对象
-func (l *APIServer) GetConf(ctx context.Context, req *api.ReqConf) (*api.RespConf, error) {
+func (l *APIServer) GetConf(_ context.Context, _ *api.ReqConf) (*api.RespConf, error) {
 	return &api.RespConf{Code: api.Code_Success, Conf: config.Obtain().Conf2RPC()}, nil
 }
 
 // ObtainDatabases 获取数据库集合
-func (l *APIServer) ObtainDatabases(ctx context.Context, req *api.ReqDatabases) (*api.RespDatabases, error) {
-	return &api.RespDatabases{Code: api.Code_Success, Databases: engine.Obtain().GetDatabases()}, nil
+func (l *APIServer) ObtainDatabases(_ context.Context, _ *api.ReqDatabases) (*api.RespDatabases, error) {
+	return &api.RespDatabases{Code: api.Code_Success, Databases: engine.Obtain().Databases()}, nil
 }
 
 // ObtainForms 获取数据库表集合
-func (l *APIServer) ObtainForms(ctx context.Context, req *api.ReqForms) (*api.RespForms, error) {
-	return &api.RespForms{Code: api.Code_Success, Forms: engine.Obtain().GetForms(req.DatabaseName)}, nil
+func (l *APIServer) ObtainForms(_ context.Context, req *api.ReqForms) (*api.RespForms, error) {
+	return &api.RespForms{Code: api.Code_Success, Forms: engine.Obtain().Forms(req.DatabaseName)}, nil
 }
 
 // CreateDatabase 新建数据库
-func (l *APIServer) CreateDatabase(ctx context.Context, req *api.ReqCreateDatabase) (*api.Resp, error) {
+func (l *APIServer) CreateDatabase(_ context.Context, req *api.ReqCreateDatabase) (*api.Resp, error) {
 	var err error
 	if err = engine.Obtain().NewDatabase(req.Name, req.Comment); nil != err {
 		return &api.Resp{Code: api.Code_Fail, ErrMsg: err.Error()}, err
@@ -63,7 +63,7 @@ func (l *APIServer) CreateDatabase(ctx context.Context, req *api.ReqCreateDataba
 }
 
 // CreateForm 创建表
-func (l *APIServer) CreateForm(ctx context.Context, req *api.ReqCreateForm) (*api.Resp, error) {
+func (l *APIServer) CreateForm(_ context.Context, req *api.ReqCreateForm) (*api.Resp, error) {
 	if err := engine.Obtain().NewForm(req.DatabaseName, req.Name, req.Comment, req.FormType); nil != err {
 		return &api.Resp{Code: api.Code_Fail, ErrMsg: err.Error()}, err
 	}
@@ -71,7 +71,7 @@ func (l *APIServer) CreateForm(ctx context.Context, req *api.ReqCreateForm) (*ap
 }
 
 // CreateKey 新建主键
-func (l *APIServer) CreateKey(ctx context.Context, req *api.ReqCreateKey) (*api.Resp, error) {
+func (l *APIServer) CreateKey(_ context.Context, _ *api.ReqCreateKey) (*api.Resp, error) {
 	//if err := engine.Obtain().CreateKey(req.DatabaseName, req.FormName, req.KeyStructure); nil != err {
 	//	return &api.Resp{Code: api.Code_Fail, ErrMsg: err.Error()}, err
 	//}
@@ -79,7 +79,7 @@ func (l *APIServer) CreateKey(ctx context.Context, req *api.ReqCreateKey) (*api.
 }
 
 // CreateIndex 新建索引
-func (l *APIServer) CreateIndex(ctx context.Context, req *api.ReqCreateIndex) (*api.Resp, error) {
+func (l *APIServer) CreateIndex(_ context.Context, _ *api.ReqCreateIndex) (*api.Resp, error) {
 	//if err := engine.Obtain().CreateIndex(req.DatabaseName, req.FormName, req.KeyStructure); nil != err {
 	//	return &api.Resp{Code: api.Code_Fail, ErrMsg: err.Error()}, err
 	//}
@@ -87,7 +87,7 @@ func (l *APIServer) CreateIndex(ctx context.Context, req *api.ReqCreateIndex) (*
 }
 
 // Put 新增数据
-func (l *APIServer) Put(ctx context.Context, req *api.ReqPut) (*api.RespPut, error) {
+func (l *APIServer) Put(_ context.Context, req *api.ReqPut) (*api.RespPut, error) {
 	var (
 		v       interface{}
 		hashKey uint64
@@ -108,7 +108,7 @@ PUT:
 }
 
 // Set 新增数据
-func (l *APIServer) Set(ctx context.Context, req *api.ReqSet) (*api.RespSet, error) {
+func (l *APIServer) Set(_ context.Context, req *api.ReqSet) (*api.RespSet, error) {
 	var (
 		v       interface{}
 		hashKey uint64
@@ -129,7 +129,7 @@ PUT:
 }
 
 // Get 获取数据
-func (l *APIServer) Get(ctx context.Context, req *api.ReqGet) (*api.RespGet, error) {
+func (l *APIServer) Get(_ context.Context, req *api.ReqGet) (*api.RespGet, error) {
 	var (
 		v    interface{}
 		data []byte
@@ -145,7 +145,7 @@ func (l *APIServer) Get(ctx context.Context, req *api.ReqGet) (*api.RespGet, err
 }
 
 // Remove 删除数据
-func (l *APIServer) Remove(ctx context.Context, req *api.ReqRemove) (*api.Resp, error) {
+func (l *APIServer) Remove(_ context.Context, req *api.ReqRemove) (*api.Resp, error) {
 	if _, err := engine.Obtain().Del(req.DatabaseName, req.FormName, req.Key); nil != err {
 		return &api.Resp{Code: api.Code_Fail, ErrMsg: err.Error()}, err
 	}
@@ -153,7 +153,7 @@ func (l *APIServer) Remove(ctx context.Context, req *api.ReqRemove) (*api.Resp, 
 }
 
 // Insert 新增数据
-func (l *APIServer) Insert(ctx context.Context, req *api.ReqInsert) (*api.RespInsert, error) {
+func (l *APIServer) Insert(_ context.Context, _ *api.ReqInsert) (*api.RespInsert, error) {
 	//	var (
 	//		v       interface{}
 	//		hashKey uint64
@@ -174,7 +174,7 @@ func (l *APIServer) Insert(ctx context.Context, req *api.ReqInsert) (*api.RespIn
 }
 
 // Select 获取数据
-func (l *APIServer) Select(ctx context.Context, req *api.ReqSelect) (*api.RespSelect, error) {
+func (l *APIServer) Select(_ context.Context, _ *api.ReqSelect) (*api.RespSelect, error) {
 	//var (
 	//	count int32
 	//	v     interface{}
@@ -195,7 +195,7 @@ func (l *APIServer) Select(ctx context.Context, req *api.ReqSelect) (*api.RespSe
 }
 
 // Delete 删除数据
-func (l *APIServer) Delete(ctx context.Context, req *api.ReqDelete) (*api.RespDelete, error) {
+func (l *APIServer) Delete(_ context.Context, _ *api.ReqDelete) (*api.RespDelete, error) {
 	//var (
 	//	s     = &Selector{}
 	//	count int32

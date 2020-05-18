@@ -63,8 +63,8 @@ type Engine struct {
 	mu        sync.Mutex
 }
 
-// GetDatabases 获取数据库集合
-func (e *Engine) GetDatabases() []*api.Database {
+// Databases 获取数据库集合
+func (e *Engine) Databases() []*api.Database {
 	var respDBs []*api.Database
 	for _, db := range e.databaseArr() {
 		respDBs = append(respDBs, &api.Database{ID: db.id, Name: db.name, Comment: db.comment, Forms: e.formatForms(db)})
@@ -81,22 +81,6 @@ func (e *Engine) databaseArr() []*database {
 	return dbs
 }
 
-// GetForms 根据数据库名获取表集合
-func (e *Engine) GetForms(databaseName string) []*api.Form {
-	db := e.databases[databaseName]
-	var fms []*api.Form
-	for _, form := range db.forms {
-		fms = append(fms, &api.Form{
-			ID:       form.ID(),
-			Name:     form.Name(),
-			Comment:  form.Comment(),
-			FormType: form.FormType(),
-			Indexes:  form.Indexes(),
-		})
-	}
-	return fms
-}
-
 func (e *Engine) formatForms(db *database) map[string]*api.Form {
 	var fms = make(map[string]*api.Form)
 	for _, form := range db.forms {
@@ -109,6 +93,11 @@ func (e *Engine) formatForms(db *database) map[string]*api.Form {
 		}
 	}
 	return fms
+}
+
+// Forms 根据数据库名获取表集合
+func (e *Engine) Forms(databaseName string) []*api.Form {
+	return e.databases[databaseName].formArr()
 }
 
 // NewDatabase 新建数据库

@@ -46,6 +46,21 @@ type database struct {
 	mu      sync.Mutex
 }
 
+// formArr 根据数据库名获取表集合
+func (db *database) formArr() []*api.Form {
+	var fms []*api.Form
+	for _, form := range db.forms {
+		fms = append(fms, &api.Form{
+			ID:       form.ID(),
+			Name:     form.Name(),
+			Comment:  form.Comment(),
+			FormType: form.FormType(),
+			Indexes:  form.Indexes(),
+		})
+	}
+	return fms
+}
+
 // newForm 新建表，会创建默认自增主键
 //
 // formName 表名称
